@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>서대문구 고령인구 + 횡단보도/그늘막 + 후보지 TOP100</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .app {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      background: #f6f7f9;
+    }
+    .sidebar {
+      width: 360px;
+      min-width: 320px;
+      max-width: 420px;
+      border-right: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.96);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar header {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .sidebar h1 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .sidebar .meta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f0f2f5;
+      border: 1px solid rgba(0,0,0,0.06);
+      font-size: 11px;
+      color: #333;
+    }
+    .search {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+    .search input {
+      flex: 1;
+      padding: 10px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      outline: none;
+      font-size: 13px;
+    }
+    .search button {
+      padding: 10px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .list {
+      overflow: auto;
+      padding: 8px;
+    }
+    .item {
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: white;
+      margin: 8px 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      transition: transform 0.05s ease;
+    }
+    .item:hover { transform: translateY(-1px); }
+    .item.active {
+      outline: 2px solid rgba(0,0,0,0.18);
+    }
+    .item .row1 {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+    .rank {
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .score {
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .place {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .detail {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.35;
+    }
+
+    #map { flex: 1; height: 100vh; }
+
+    /* Leaflet info panels */
+    .info {
+      padding: 10px 12px;
+      font: 14px/16px Arial, sans-serif;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+    .info h4 { margin: 0 0 6px; font-size: 14px; }
+    .legend { line-height: 18px; color: #333; }
+    .legend i {
+      width: 14px; height: 14px; float: left; margin-right: 8px; opacity: 0.8;
+      border-radius: 3px; border: 1px solid rgba(0,0,0,0.12);
+    }
+
+    /* Small screens: sidebar becomes overlay-ish */
+    @media (max-width: 900px) {
+      .sidebar { width: 320px; }
+    }
+    @media (max-width: 720px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; max-width: none; height: 42vh; }
+      #map { height: 58vh; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <header>
+        <h1>⭐ 그늘막 설치 후보지 TOP100 (점수순)</h1>
+        <div class="meta">
+          <span class="pill">필터: 기존 그늘막 80m 제외</span>
+          <span class="pill">점수: 도로/교차로/대로변/고령/쉼터</span>
+        </div>
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="동 이름/노드ID로 검색 (예: 홍제1동, 12345)" />
+          <button id="clearBtn" type="button">지우기</button>
+          <button id="downloadBtn" type="button">CSV 다운로드</button>
+        </div>
+      </header>
+      <div id="candidateList" class="list"></div>
+    </aside>
+
+    <div id="map"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
