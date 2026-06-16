@@ -1,0 +1,48 @@
+export async function getHealth() {
+  return request("/api/health");
+}
+
+export async function getRules() {
+  return request("/api/rules");
+}
+
+export async function getCandidates({ enabledRuleIds, mode }) {
+  const limitsByMode = {
+    selected: "100",
+    review: "200",
+    excluded: "500",
+    all: "500"
+  };
+  const params = new URLSearchParams({
+    enabled: enabledRuleIds.join(","),
+    mode,
+    limit: limitsByMode[mode] || "100"
+  });
+  return request(`/api/candidates?${params.toString()}`);
+}
+
+export async function getExistingShades() {
+  return request("/api/existing-shades");
+}
+
+export async function uploadInstalledShades({ file, year }) {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("year", year);
+  const response = await fetch("/api/uploads/installed-shades", {
+    method: "POST",
+    body: form
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return response.json();
+}
+
+async function request(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return response.json();
+}

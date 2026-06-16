@@ -1,0 +1,2186 @@
+[
+  {
+    "address": "서울특별시 서대문구 가좌로5길 5 (구경계)",
+    "status": "ok",
+    "longitude": 126.92353400375836,
+    "latitude": 37.58545795412036
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 340-8",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 147",
+    "status": "ok",
+    "longitude": 126.92322398828716,
+    "latitude": 37.58497400135627
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 145",
+    "status": "ok",
+    "longitude": 126.92331324737125,
+    "latitude": 37.58485596913643
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 141",
+    "status": "ok",
+    "longitude": 126.92360381504386,
+    "latitude": 37.58452947567937
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 83",
+    "status": "ok",
+    "longitude": 126.92777086740979,
+    "latitude": 37.58031275968287
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 79",
+    "status": "ok",
+    "longitude": 126.92801242488528,
+    "latitude": 37.58008348338504
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 21",
+    "status": "ok",
+    "longitude": 126.93313346530934,
+    "latitude": 37.57689113868272
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 27",
+    "status": "ok",
+    "longitude": 126.93239723204468,
+    "latitude": 37.577052758474565
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 33",
+    "status": "ok",
+    "longitude": 126.93168972957787,
+    "latitude": 37.5773783438471
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 19",
+    "status": "ok",
+    "longitude": 126.93332736097796,
+    "latitude": 37.57684597533567
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 151-69",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 151-161",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 215",
+    "status": "ok",
+    "longitude": 126.93508384009101,
+    "latitude": 37.57626678437799
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 219",
+    "status": "ok",
+    "longitude": 126.93515583220993,
+    "latitude": 37.57691913244786
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 36",
+    "status": "ok",
+    "longitude": 126.93185979540448,
+    "latitude": 37.57767668087409
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 50",
+    "status": "ok",
+    "longitude": 126.93036850347603,
+    "latitude": 37.578341090123914
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 100-2",
+    "status": "ok",
+    "longitude": 126.92714045104412,
+    "latitude": 37.58168018254102
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 100",
+    "status": "ok",
+    "longitude": 126.92694204498127,
+    "latitude": 37.58179831241179
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 116",
+    "status": "ok",
+    "longitude": 126.92587360758077,
+    "latitude": 37.58285998503311
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 118",
+    "status": "ok",
+    "longitude": 126.92571019223017,
+    "latitude": 37.58301759703784
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 120",
+    "status": "ok",
+    "longitude": 126.92552647850172,
+    "latitude": 37.58321600998457
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 134",
+    "status": "ok",
+    "longitude": 126.92488334969869,
+    "latitude": 37.585087836266354
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 146",
+    "status": "ok",
+    "longitude": 126.92379011502425,
+    "latitude": 37.58499269734081
+  },
+  {
+    "address": "서울특별시 서대문구 가좌로 148 (충암고등학교앞)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 413",
+    "status": "ok",
+    "longitude": 126.94646495415077,
+    "latitude": 37.586173269648505
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동 449-1",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 443",
+    "status": "ok",
+    "longitude": 126.9440355000772,
+    "latitude": 37.58506487980196
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 441",
+    "status": "ok",
+    "longitude": 126.9439761618597,
+    "latitude": 37.58512626502224
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 411",
+    "status": "ok",
+    "longitude": 126.94089286492797,
+    "latitude": 37.58506104397841
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 393",
+    "status": "ok",
+    "longitude": 126.93884955541718,
+    "latitude": 37.5838993228698
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 375",
+    "status": "ok",
+    "longitude": 126.93730933263143,
+    "latitude": 37.58289566503336
+  },
+  {
+    "address": "서울특별시 서대문구 백련교",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 369",
+    "status": "ok",
+    "longitude": 126.93672727629291,
+    "latitude": 37.58263779568465
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 426-11",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 359",
+    "status": "ok",
+    "longitude": 126.9358749129687,
+    "latitude": 37.58185875726494
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 321",
+    "status": "ok",
+    "longitude": 126.93286329816658,
+    "latitude": 37.57965513374184
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 319",
+    "status": "ok",
+    "longitude": 126.9325257819643,
+    "latitude": 37.57987596600013
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 309",
+    "status": "ok",
+    "longitude": 126.93135529697471,
+    "latitude": 37.579111263720634
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 303",
+    "status": "ok",
+    "longitude": 126.93108302609015,
+    "latitude": 37.578628167747425
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 289",
+    "status": "ok",
+    "longitude": 126.92970576446287,
+    "latitude": 37.57822662235379
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 285",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 281",
+    "status": "ok",
+    "longitude": 126.92911896267967,
+    "latitude": 37.5775637297465
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 275",
+    "status": "ok",
+    "longitude": 126.9285870036885,
+    "latitude": 37.57728706434479
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 273",
+    "status": "ok",
+    "longitude": 126.92843433862069,
+    "latitude": 37.577247917835685
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 98",
+    "status": "ok",
+    "longitude": 126.92613198561466,
+    "latitude": 37.57602011454907
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 271",
+    "status": "ok",
+    "longitude": 126.92803122215427,
+    "latitude": 37.577119987062154
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 247",
+    "status": "ok",
+    "longitude": 126.925802973201,
+    "latitude": 37.5758349869238
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 231",
+    "status": "ok",
+    "longitude": 126.92458788196657,
+    "latitude": 37.574898475542106
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 151",
+    "status": "ok",
+    "longitude": 126.91781504012086,
+    "latitude": 37.56988492552557
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 387",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 137",
+    "status": "ok",
+    "longitude": 126.91690575036093,
+    "latitude": 37.56913709176289
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 143",
+    "status": "ok",
+    "longitude": 126.91733594982254,
+    "latitude": 37.569536378024324
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 102-3",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 구경계",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 527-2 (연가교)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 277-152",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 456-4",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 277-11",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 261-48",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 271",
+    "status": "ok",
+    "longitude": 126.93581577569861,
+    "latitude": 37.581311058400324
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 334",
+    "status": "ok",
+    "longitude": 126.93415925397525,
+    "latitude": 37.58011332462617
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 364",
+    "status": "ok",
+    "longitude": 126.93650479545494,
+    "latitude": 37.58186931392938
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 366",
+    "status": "ok",
+    "longitude": 126.93670693315391,
+    "latitude": 37.58204176282287
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 428",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 460",
+    "status": "ok",
+    "longitude": 126.94598068265933,
+    "latitude": 37.58545337869128
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 466",
+    "status": "ok",
+    "longitude": 126.94642171453168,
+    "latitude": 37.585751920435165
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 468",
+    "status": "ok",
+    "longitude": 126.9466758398582,
+    "latitude": 37.58594793351475
+  },
+  {
+    "address": "서울특별시 서대문구 모래내로 470",
+    "status": "ok",
+    "longitude": 126.94679103176371,
+    "latitude": 37.5859624338977
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 81",
+    "status": "ok",
+    "longitude": 126.96913641875089,
+    "latitude": 37.56223225327611
+  },
+  {
+    "address": "서울특별시 서대문구 서소문로 63",
+    "status": "ok",
+    "longitude": 126.96821265947382,
+    "latitude": 37.56191870065271
+  },
+  {
+    "address": "서울특별시 서대문구 서소문로 61-1",
+    "status": "ok",
+    "longitude": 126.96803358206441,
+    "latitude": 37.561929788834576
+  },
+  {
+    "address": "서울특별시 서대문구 서소문로 61",
+    "status": "ok",
+    "longitude": 126.96792754769687,
+    "latitude": 37.56182912842665
+  },
+  {
+    "address": "서울특별시 서대문구 서소문로 57",
+    "status": "ok",
+    "longitude": 126.96758321840278,
+    "latitude": 37.5617282092622
+  },
+  {
+    "address": "서울특별시 서대문구 사천교",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 302",
+    "status": "ok",
+    "longitude": 126.92362943789789,
+    "latitude": 37.566185088624536
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 306",
+    "status": "ok",
+    "longitude": 126.92417335336575,
+    "latitude": 37.566121127978235
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 312",
+    "status": "ok",
+    "longitude": 126.92491881314764,
+    "latitude": 37.56605993493074
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 318",
+    "status": "ok",
+    "longitude": 126.92548779179714,
+    "latitude": 37.56604957014949
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 320",
+    "status": "ok",
+    "longitude": 126.92575381028516,
+    "latitude": 37.566016765247916
+  },
+  {
+    "address": "서울특별시 서대문구 연희로5길 62-20",
+    "status": "ok",
+    "longitude": 126.92632150605317,
+    "latitude": 37.56592905597073
+  },
+  {
+    "address": "서울특별시 서대문구 연희로5길 54-11",
+    "status": "ok",
+    "longitude": 126.92649809136553,
+    "latitude": 37.565841551684485
+  },
+  {
+    "address": "서울특별시 서대문구 동교로 296-6",
+    "status": "ok",
+    "longitude": 126.92801570394235,
+    "latitude": 37.56506563514549
+  },
+  {
+    "address": "서울특별시 서대문구 창천동 76-20",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연세로 교차로",
+    "status": "ok",
+    "longitude": 126.93671236212694,
+    "latitude": 37.55587056886334
+  },
+  {
+    "address": "서울특별시 서대문구 신촌동89-4 (고가교)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌동 89-4 (고가교)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 이화여대길 52 (연구관)",
+    "status": "ok",
+    "longitude": 126.94882908510237,
+    "latitude": 37.561277240191274
+  },
+  {
+    "address": "서울특별시 서대문구 이화여대길 52 (교육관)",
+    "status": "ok",
+    "longitude": 126.94679170722225,
+    "latitude": 37.5650533412101
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 570",
+    "status": "ok",
+    "longitude": 126.94753250545095,
+    "latitude": 37.5666906548943
+  },
+  {
+    "address": "서울특별시 서대문구 독립문공원옆",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 독립문 극동아파트",
+    "status": "ok",
+    "longitude": 126.95562143204143,
+    "latitude": 37.57206864304838
+  },
+  {
+    "address": "서울특별시 서대문구 성산로573-74",
+    "status": "ok",
+    "longitude": 126.9471298198768,
+    "latitude": 37.56749991898978
+  },
+  {
+    "address": "서울특별시 서대문구 성산로573",
+    "status": "ok",
+    "longitude": 126.94694188857156,
+    "latitude": 37.567184587576904
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 569",
+    "status": "ok",
+    "longitude": 126.94685956912375,
+    "latitude": 37.5669441922873
+  },
+  {
+    "address": "서울특별시 서대문구 성산로543",
+    "status": "ok",
+    "longitude": 126.94529670047093,
+    "latitude": 37.56485131861669
+  },
+  {
+    "address": "서울특별시 서대문구 연대정문앞",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연대공학원앞",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연세대 남문",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연대학군단앞",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 성산로381",
+    "status": "ok",
+    "longitude": 126.93122255826975,
+    "latitude": 37.56312126167458
+  },
+  {
+    "address": "서울특별시 서대문구 성산로379",
+    "status": "ok",
+    "longitude": 126.93105604629605,
+    "latitude": 37.5632108415179
+  },
+  {
+    "address": "서울특별시 서대문구 연희로77-12",
+    "status": "ok",
+    "longitude": 126.92894261861055,
+    "latitude": 37.565410240740725
+  },
+  {
+    "address": "서울특별시 서대문구 성산로309",
+    "status": "ok",
+    "longitude": 126.92479496386206,
+    "latitude": 37.56661668506965
+  },
+  {
+    "address": "서울특별시 서대문구 성산로303",
+    "status": "ok",
+    "longitude": 126.92387550551325,
+    "latitude": 37.56661276522266
+  },
+  {
+    "address": "서울특별시 서대문구 성산로301",
+    "status": "ok",
+    "longitude": 126.92375363856092,
+    "latitude": 37.56662678548402
+  },
+  {
+    "address": "서울특별시 서대문구 성산로291",
+    "status": "ok",
+    "longitude": 126.92256373041496,
+    "latitude": 37.56673342599178
+  },
+  {
+    "address": "서울특별시 서대문구 성산로259",
+    "status": "ok",
+    "longitude": 126.91925761907417,
+    "latitude": 37.56743088771974
+  },
+  {
+    "address": "서울특별시 서대문구 성산로 255",
+    "status": "ok",
+    "longitude": 126.91886640651629,
+    "latitude": 37.56772099913284
+  },
+  {
+    "address": "서울특별시 서대문구 홍제천로11",
+    "status": "ok",
+    "longitude": 126.93284526315588,
+    "latitude": 37.577801118226596
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 32",
+    "status": "ok",
+    "longitude": 126.94499024247699,
+    "latitude": 37.59155079980426
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 60",
+    "status": "ok",
+    "longitude": 126.94778914872622,
+    "latitude": 37.5931398014039
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로74",
+    "status": "ok",
+    "longitude": 126.9483441254539,
+    "latitude": 37.594151479831766
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동 280-2",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동 279-95",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 134",
+    "status": "ok",
+    "longitude": 126.9530216120275,
+    "latitude": 37.595783768755524
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동 454-1",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 140",
+    "status": "ok",
+    "longitude": 126.95273285526916,
+    "latitude": 37.59582079791957
+  },
+  {
+    "address": "서울특별시 서대문구 고가 하부",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 168",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍지문도로 입구",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍지문2길다리 2",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동 3-2",
+    "status": "ok",
+    "longitude": 126.94651279194517,
+    "latitude": 37.591268082370036
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 91",
+    "status": "ok",
+    "longitude": 126.9487544330373,
+    "latitude": 37.595913139541764
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 89",
+    "status": "ok",
+    "longitude": 126.94867411667423,
+    "latitude": 37.59573797690628
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 87",
+    "status": "ok",
+    "longitude": 126.94847741724587,
+    "latitude": 37.59543555723189
+  },
+  {
+    "address": "서울특별시 서대문구 세검정로 19-1",
+    "status": "ok",
+    "longitude": 126.9435915838442,
+    "latitude": 37.59236146345219
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 48-323",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 20",
+    "status": "ok",
+    "longitude": 126.91640288303935,
+    "latitude": 37.56880050330543
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 24",
+    "status": "ok",
+    "longitude": 126.9159391468144,
+    "latitude": 37.56896965420705
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 26",
+    "status": "ok",
+    "longitude": 126.91570922780954,
+    "latitude": 37.56918347767537
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 30",
+    "status": "ok",
+    "longitude": 126.91528510565793,
+    "latitude": 37.56937453449398
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 32",
+    "status": "ok",
+    "longitude": 126.91511600720509,
+    "latitude": 37.56949745444972
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 36",
+    "status": "ok",
+    "longitude": 126.91474704778742,
+    "latitude": 37.5696064602255
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 38",
+    "status": "ok",
+    "longitude": 126.91448378894115,
+    "latitude": 37.56981677938715
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 40",
+    "status": "ok",
+    "longitude": 126.91433477098121,
+    "latitude": 37.56998931511124
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 56",
+    "status": "ok",
+    "longitude": 126.91224578061707,
+    "latitude": 37.57091156242285
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 100",
+    "status": "ok",
+    "longitude": 126.91050291086023,
+    "latitude": 37.57385712101476
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 134",
+    "status": "ok",
+    "longitude": 126.90586618033221,
+    "latitude": 37.57477245149953
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 138",
+    "status": "ok",
+    "longitude": 126.90555436793849,
+    "latitude": 37.575124842395766
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 144",
+    "status": "ok",
+    "longitude": 126.9052245898914,
+    "latitude": 37.57533888730016
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 154",
+    "status": "ok",
+    "longitude": 126.90497615515406,
+    "latitude": 37.57556539496981
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 157",
+    "status": "ok",
+    "longitude": 126.9029954836819,
+    "latitude": 37.576185053076344
+  },
+  {
+    "address": "서울특별시 서대문구 북가좌삼거리",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 가좌삼거리",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 43",
+    "status": "ok",
+    "longitude": 126.9134351789033,
+    "latitude": 37.56974402204979
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 41",
+    "status": "ok",
+    "longitude": 126.91383055772242,
+    "latitude": 37.569537565764634
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 294-10",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 23-1",
+    "status": "ok",
+    "longitude": 126.915546332428,
+    "latitude": 37.568708935679005
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 23",
+    "status": "ok",
+    "longitude": 126.91562307683209,
+    "latitude": 37.568669776213575
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 17",
+    "status": "ok",
+    "longitude": 126.91613682417491,
+    "latitude": 37.56846849996257
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 110-4",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 331",
+    "status": "ok",
+    "longitude": 126.96079540415624,
+    "latitude": 37.55967786707842
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 329",
+    "status": "ok",
+    "longitude": 126.96153006391106,
+    "latitude": 37.55928024821135
+  },
+  {
+    "address": "서울특별시 서대문구 북아현동 915",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 311",
+    "status": "ok",
+    "longitude": 126.96002618805991,
+    "latitude": 37.55817930288791
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 297",
+    "status": "ok",
+    "longitude": 126.95922604788353,
+    "latitude": 37.55760791973478
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 277",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로35길 10",
+    "status": "ok",
+    "longitude": 126.9558607067122,
+    "latitude": 37.55862303517054
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로35길 1",
+    "status": "ok",
+    "longitude": 126.95522567224316,
+    "latitude": 37.557589541443235
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 185",
+    "status": "ok",
+    "longitude": 126.94656524081964,
+    "latitude": 37.55702273391945
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 183",
+    "status": "ok",
+    "longitude": 126.9463071277047,
+    "latitude": 37.557063523856385
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 161",
+    "status": "ok",
+    "longitude": 126.94389962682378,
+    "latitude": 37.55689398122388
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 157",
+    "status": "ok",
+    "longitude": 126.94361456192078,
+    "latitude": 37.55694015574663
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 155 (NH농협은행",
+    "status": "ok",
+    "longitude": 126.9432463770612,
+    "latitude": 37.556963255933034
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 149 (신촌자이엘라)",
+    "status": "ok",
+    "longitude": 126.94247225889961,
+    "latitude": 37.5569457806057
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 145",
+    "status": "ok",
+    "longitude": 126.94212247140266,
+    "latitude": 37.556833931849674
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 115",
+    "status": "ok",
+    "longitude": 126.93886564729462,
+    "latitude": 37.555965582050646
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 113",
+    "status": "ok",
+    "longitude": 126.93857010678653,
+    "latitude": 37.55597391395948
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 107",
+    "status": "ok",
+    "longitude": 126.93787008838535,
+    "latitude": 37.55565566214541
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 105",
+    "status": "ok",
+    "longitude": 126.9374476324286,
+    "latitude": 37.55572670281222
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 91",
+    "status": "ok",
+    "longitude": 126.93640395515325,
+    "latitude": 37.55560193887014
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 63",
+    "status": "ok",
+    "longitude": 126.9337693927452,
+    "latitude": 37.55659452912558
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 61",
+    "status": "ok",
+    "longitude": 126.93344564214775,
+    "latitude": 37.55664756803456
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 61-1",
+    "status": "ok",
+    "longitude": 126.93331818789574,
+    "latitude": 37.556708693995276
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 57-1",
+    "status": "ok",
+    "longitude": 126.93308865378432,
+    "latitude": 37.55685509161252
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 1",
+    "status": "ok",
+    "longitude": 126.92741136875101,
+    "latitude": 37.55889626452337
+  },
+  {
+    "address": "서울특별시 서대문구 신촌로 155",
+    "status": "ok",
+    "longitude": 126.9432463770612,
+    "latitude": 37.556963255933034
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 20",
+    "status": "ok",
+    "longitude": 126.94313734247989,
+    "latitude": 37.5583685239084
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 22",
+    "status": "ok",
+    "longitude": 126.9430138737599,
+    "latitude": 37.5585616544673
+  },
+  {
+    "address": "서울특별시 서대문구 신촌박스퀘어",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역",
+    "status": "ok",
+    "longitude": 126.9431791933655,
+    "latitude": 37.55756385057762
+  },
+  {
+    "address": "서울특별시 서대문구 신촌가도교하부 앞",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌가도교 하부",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 43",
+    "status": "ok",
+    "longitude": 126.94064574737018,
+    "latitude": 37.55895196548707
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 39",
+    "status": "ok",
+    "longitude": 126.94103400702929,
+    "latitude": 37.55896723897216
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 37",
+    "status": "ok",
+    "longitude": 126.94130352501557,
+    "latitude": 37.55897266472333
+  },
+  {
+    "address": "서울특별시 서대문구 신촌역로 9-1",
+    "status": "ok",
+    "longitude": 126.94264119420029,
+    "latitude": 37.55765440311077
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 407",
+    "status": "ok",
+    "longitude": 126.9404866428535,
+    "latitude": 37.591297738566055
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 277-219",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 277-98",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 267",
+    "status": "ok",
+    "longitude": 126.93590850223677,
+    "latitude": 37.580954186759946
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 265",
+    "status": "ok",
+    "longitude": 126.93580090675769,
+    "latitude": 37.5807027132106
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 261",
+    "status": "ok",
+    "longitude": 126.93588693568232,
+    "latitude": 37.580302910474906
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 251",
+    "status": "ok",
+    "longitude": 126.93587341725701,
+    "latitude": 37.57948077298564
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 247",
+    "status": "ok",
+    "longitude": 126.93580599749549,
+    "latitude": 37.57915147851128
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 245",
+    "status": "ok",
+    "longitude": 126.93574856569592,
+    "latitude": 37.57899629410487
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 233",
+    "status": "ok",
+    "longitude": 126.93558086346638,
+    "latitude": 37.57793457192199
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 231",
+    "status": "ok",
+    "longitude": 126.93554590175876,
+    "latitude": 37.57773548074931
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 213",
+    "status": "ok",
+    "longitude": 126.93517087372908,
+    "latitude": 37.57607773423139
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 207",
+    "status": "ok",
+    "longitude": 126.93507025904987,
+    "latitude": 37.57559615422001
+  },
+  {
+    "address": "서울특별시 서대문구 연희동산 66-2",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 125",
+    "status": "ok",
+    "longitude": 126.93228515586469,
+    "latitude": 37.56898815873513
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 119",
+    "status": "ok",
+    "longitude": 126.93189649913194,
+    "latitude": 37.56839686269036
+  },
+  {
+    "address": "서울특별시 서대문구 연희로113",
+    "status": "ok",
+    "longitude": 126.93152987476148,
+    "latitude": 37.56802822763949
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 109",
+    "status": "ok",
+    "longitude": 126.93136566896428,
+    "latitude": 37.56778544917586
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 93",
+    "status": "ok",
+    "longitude": 126.930334586947,
+    "latitude": 37.566477471297105
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 87",
+    "status": "ok",
+    "longitude": 126.93004975100934,
+    "latitude": 37.56611183970401
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 83",
+    "status": "ok",
+    "longitude": 126.9297593509363,
+    "latitude": 37.56578517597559
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 79",
+    "status": "ok",
+    "longitude": 126.92959754901045,
+    "latitude": 37.56550821883866
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 209-2 (연희ic 인근)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 218-1",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 57",
+    "status": "ok",
+    "longitude": 126.92833509886827,
+    "latitude": 37.563771427319224
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 6",
+    "status": "ok",
+    "longitude": 126.92709724328321,
+    "latitude": 37.55925091916953
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 8",
+    "status": "ok",
+    "longitude": 126.92688593293221,
+    "latitude": 37.559540935397926
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 22",
+    "status": "ok",
+    "longitude": 126.92689691270465,
+    "latitude": 37.56084956942772
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 26",
+    "status": "ok",
+    "longitude": 126.92710818075955,
+    "latitude": 37.561013593301425
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 36",
+    "status": "ok",
+    "longitude": 126.92750230837132,
+    "latitude": 37.56182480327297
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 48",
+    "status": "ok",
+    "longitude": 126.92813319212664,
+    "latitude": 37.56278567431611
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 78",
+    "status": "ok",
+    "longitude": 126.92992797079872,
+    "latitude": 37.56502338583692
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 98",
+    "status": "ok",
+    "longitude": 126.93100012584117,
+    "latitude": 37.56661956550779
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 100",
+    "status": "ok",
+    "longitude": 126.9312061752407,
+    "latitude": 37.566854630449804
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 110",
+    "status": "ok",
+    "longitude": 126.93182190873713,
+    "latitude": 37.56760061795165
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 114",
+    "status": "ok",
+    "longitude": 126.93193686676321,
+    "latitude": 37.567861064728554
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 122",
+    "status": "ok",
+    "longitude": 126.9324461012215,
+    "latitude": 37.568485850068825
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 136",
+    "status": "ok",
+    "longitude": 126.9342649900972,
+    "latitude": 37.569033157667505
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 148",
+    "status": "ok",
+    "longitude": 126.93454885886125,
+    "latitude": 37.5703285479501
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 152",
+    "status": "ok",
+    "longitude": 126.9342676798511,
+    "latitude": 37.570696112725386
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 204",
+    "status": "ok",
+    "longitude": 126.9355685868095,
+    "latitude": 37.575169841065396
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 700",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 149-54",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 220",
+    "status": "ok",
+    "longitude": 126.93577256365424,
+    "latitude": 37.576713464471524
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 218",
+    "status": "ok",
+    "longitude": 126.93572905108326,
+    "latitude": 37.57642370119087
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 227",
+    "status": "ok",
+    "longitude": 126.93541232410243,
+    "latitude": 37.577383571873035
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 141-47",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 242 (서대문보건소)",
+    "status": "ok",
+    "longitude": 126.93627708811081,
+    "latitude": 37.578631535421444
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 248 (서대문구청)",
+    "status": "ok",
+    "longitude": 126.93631789755429,
+    "latitude": 37.57923898948937
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 170-186",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 266",
+    "status": "ok",
+    "longitude": 126.93657727937911,
+    "latitude": 37.58072428945836
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 272",
+    "status": "ok",
+    "longitude": 126.93645398145347,
+    "latitude": 37.581293979282634
+  },
+  {
+    "address": "서울특별시 서대문구 연희로 276",
+    "status": "ok",
+    "longitude": 126.9365776043045,
+    "latitude": 37.58171810152991
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 100 (301동)",
+    "status": "ok",
+    "longitude": 126.90857113121362,
+    "latitude": 37.57370005614577
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 100 (401동)",
+    "status": "ok",
+    "longitude": 126.90997777304571,
+    "latitude": 37.57731895705223
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 54",
+    "status": "ok",
+    "longitude": 126.91010946480918,
+    "latitude": 37.57788244662616
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 78",
+    "status": "ok",
+    "longitude": 126.9114932143373,
+    "latitude": 37.57977307676141
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 80",
+    "status": "ok",
+    "longitude": 126.9116942707837,
+    "latitude": 37.58001489856643
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 148",
+    "status": "ok",
+    "longitude": 126.9155449169287,
+    "latitude": 37.58534974094711
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 153",
+    "status": "ok",
+    "longitude": 126.91540990512564,
+    "latitude": 37.58600225588041
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 113",
+    "status": "ok",
+    "longitude": 126.9131884586197,
+    "latitude": 37.58273823666164
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 107",
+    "status": "ok",
+    "longitude": 126.91293045478841,
+    "latitude": 37.582413814270296
+  },
+  {
+    "address": "서울특별시 서대문구 북가좌동 307-6",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 55",
+    "status": "ok",
+    "longitude": 126.90981599090063,
+    "latitude": 37.578398858250054
+  },
+  {
+    "address": "서울특별시 서대문구 수색로 132",
+    "status": "ok",
+    "longitude": 126.90603750926016,
+    "latitude": 37.57463812041185
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 18",
+    "status": "ok",
+    "longitude": 126.93126197725223,
+    "latitude": 37.570004926340516
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 22",
+    "status": "ok",
+    "longitude": 126.931128793721,
+    "latitude": 37.57021975615905
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 24",
+    "status": "ok",
+    "longitude": 126.93085736495263,
+    "latitude": 37.57039116361629
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 52",
+    "status": "ok",
+    "longitude": 126.92908887329463,
+    "latitude": 37.57252934285647
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 54",
+    "status": "ok",
+    "longitude": 126.92894496941523,
+    "latitude": 37.572697455157595
+  },
+  {
+    "address": "서울특별시 서대문구 홍제천로 116",
+    "status": "ok",
+    "longitude": 126.92693118811644,
+    "latitude": 37.575139970362486
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 144",
+    "status": "ok",
+    "longitude": 126.921619355301,
+    "latitude": 37.57775882951339
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 150 (DMC2차아이파크아파트)",
+    "status": "ok",
+    "longitude": 126.92174849841669,
+    "latitude": 37.578593850790156
+  },
+  {
+    "address": "서울특별시 서대문구 연희중학교",
+    "status": "ok",
+    "longitude": 126.91849680264374,
+    "latitude": 37.57893684256195
+  },
+  {
+    "address": "서울특별시 서대문구 연가초교 후문",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 364-6",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 232-3",
+    "status": "ok",
+    "longitude": 126.91372357600775,
+    "latitude": 37.582285930552814
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 112",
+    "status": "ok",
+    "longitude": 126.9135759778703,
+    "latitude": 37.58245795369152
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 264",
+    "status": "ok",
+    "longitude": 126.9112185314884,
+    "latitude": 37.58408517849568
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 261",
+    "status": "ok",
+    "longitude": 126.91100760037278,
+    "latitude": 37.583851059357016
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 241",
+    "status": "ok",
+    "longitude": 126.912747893637,
+    "latitude": 37.58257805268786
+  },
+  {
+    "address": "서울특별시 서대문구 응암로 108",
+    "status": "ok",
+    "longitude": 126.91334523265158,
+    "latitude": 37.58217160695928
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 233",
+    "status": "ok",
+    "longitude": 126.91355304805298,
+    "latitude": 37.58200073042299
+  },
+  {
+    "address": "서울특별시 서대문구 증가로25길 4",
+    "status": "ok",
+    "longitude": 126.91395507347158,
+    "latitude": 37.58171313902793
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 223",
+    "status": "ok",
+    "longitude": 126.91417010357998,
+    "latitude": 37.581366986316716
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 193",
+    "status": "ok",
+    "longitude": 126.91643059306722,
+    "latitude": 37.579486264347814
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 191(삼성아파트 정문)",
+    "status": "ok",
+    "longitude": 126.91608204159917,
+    "latitude": 37.578074523695875
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 191",
+    "status": "ok",
+    "longitude": 126.91671999390309,
+    "latitude": 37.57905307468533
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 224-291",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 352-27",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 145",
+    "status": "ok",
+    "longitude": 126.92143617504374,
+    "latitude": 37.577448410342335
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 143",
+    "status": "ok",
+    "longitude": 126.92170455132054,
+    "latitude": 37.577457870757286
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 141",
+    "status": "ok",
+    "longitude": 126.92191527678455,
+    "latitude": 37.57735892316337
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 135",
+    "status": "ok",
+    "longitude": 126.92242199927603,
+    "latitude": 37.57736995072291
+  },
+  {
+    "address": "서울특별시 서대문구 남가좌동 347-2",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 131-1",
+    "status": "ok",
+    "longitude": 126.92289666603128,
+    "latitude": 37.57728278111799
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 129",
+    "status": "ok",
+    "longitude": 126.92323736066875,
+    "latitude": 37.57726186506419
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 123",
+    "status": "ok",
+    "longitude": 126.92356033623125,
+    "latitude": 37.577140963941105
+  },
+  {
+    "address": "서울특별시 서대문구 연희동 604",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 81",
+    "status": "ok",
+    "longitude": 126.9269288911683,
+    "latitude": 37.57463293251033
+  },
+  {
+    "address": "서울특별시 서대문구 홍제천로4길",
+    "status": "ok",
+    "longitude": 126.92525716883085,
+    "latitude": 37.57358419728485
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 71-10",
+    "status": "ok",
+    "longitude": 126.9273094209617,
+    "latitude": 37.57410870668711
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 69",
+    "status": "ok",
+    "longitude": 126.92739918152277,
+    "latitude": 37.573776758831116
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 59",
+    "status": "ok",
+    "longitude": 126.92832885869731,
+    "latitude": 37.57288732818465
+  },
+  {
+    "address": "서울특별시 서대문구 증가로 1",
+    "status": "ok",
+    "longitude": 126.93188423227141,
+    "latitude": 37.56870154789527
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 77",
+    "status": "ok",
+    "longitude": 126.96598329098035,
+    "latitude": 37.565542535469476
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 65",
+    "status": "ok",
+    "longitude": 126.96542506632991,
+    "latitude": 37.564573426243314
+  },
+  {
+    "address": "서울특별시 서대문구 충정로9길 4",
+    "status": "ok",
+    "longitude": 126.96521010632017,
+    "latitude": 37.56448590884162
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 59",
+    "status": "ok",
+    "longitude": 126.96488393411687,
+    "latitude": 37.56407310396209
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 53",
+    "status": "ok",
+    "longitude": 126.96463202592615,
+    "latitude": 37.5637495941898
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 47",
+    "status": "ok",
+    "longitude": 126.96436196840597,
+    "latitude": 37.563153445447405
+  },
+  {
+    "address": "서울특별시 서대문구 충정로5길 2",
+    "status": "ok",
+    "longitude": 126.96410421391323,
+    "latitude": 37.56274111975078
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 29 (동아일보사)",
+    "status": "ok",
+    "longitude": 126.96333017827976,
+    "latitude": 37.56193661538768
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 23 (풍산빌딩)",
+    "status": "ok",
+    "longitude": 126.96295001875583,
+    "latitude": 37.561153337920125
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 13 (삼창빌딩)",
+    "status": "ok",
+    "longitude": 126.96262182393349,
+    "latitude": 37.56056706133707
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 7 (구세군아트홀)",
+    "status": "ok",
+    "longitude": 126.9622919586622,
+    "latitude": 37.560093398897386
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 8 (종근당)",
+    "status": "ok",
+    "longitude": 126.96320237426153,
+    "latitude": 37.55967420029323
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 26",
+    "status": "ok",
+    "longitude": 126.9637841966964,
+    "latitude": 37.56123249692128
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 30",
+    "status": "ok",
+    "longitude": 126.96412719484854,
+    "latitude": 37.56161025319102
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 36 (국민연금공단)",
+    "status": "ok",
+    "longitude": 126.96448978154737,
+    "latitude": 37.561963028060674
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 50",
+    "status": "ok",
+    "longitude": 126.96513491108524,
+    "latitude": 37.562962485463466
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 52 (미동초교)",
+    "status": "ok",
+    "longitude": 126.9664721456114,
+    "latitude": 37.56311221317512
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 60",
+    "status": "ok",
+    "longitude": 126.9661512743459,
+    "latitude": 37.56388101320589
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 66",
+    "status": "ok",
+    "longitude": 126.96588729623741,
+    "latitude": 37.56437241253839
+  },
+  {
+    "address": "서울특별시 서대문구 충정로 76",
+    "status": "ok",
+    "longitude": 126.96678472959904,
+    "latitude": 37.5651978453279
+  },
+  {
+    "address": "서울특별시 서대문구 홍제동산 1-133",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 332",
+    "status": "ok",
+    "longitude": 126.95254865139775,
+    "latitude": 37.58047170576005
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 378",
+    "status": "ok",
+    "longitude": 126.94954852179058,
+    "latitude": 37.5839965887787
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 384",
+    "status": "ok",
+    "longitude": 126.9495370227521,
+    "latitude": 37.584145117409335
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 412-1",
+    "status": "ok",
+    "longitude": 126.94715796552373,
+    "latitude": 37.586371353817896
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 414",
+    "status": "ok",
+    "longitude": 126.94705427001392,
+    "latitude": 37.58646201206601
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 484",
+    "status": "ok",
+    "longitude": 126.94304234303821,
+    "latitude": 37.59163160603033
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 510 (북한산더샾아파트)",
+    "status": "ok",
+    "longitude": 126.9411773229111,
+    "latitude": 37.59456155072182
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 530 (홍은동아더프라임)",
+    "status": "ok",
+    "longitude": 126.940683339796,
+    "latitude": 37.59517779892842
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동 438-4",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 536",
+    "status": "ok",
+    "longitude": 126.94001364165322,
+    "latitude": 37.595987952855936
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 542",
+    "status": "ok",
+    "longitude": 126.9396891027055,
+    "latitude": 37.596082923867726
+  },
+  {
+    "address": "서울특별시 서대문구 홍은동산 1-129 (구경계)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 553(구경계)",
+    "status": "ok",
+    "longitude": 126.93791214928405,
+    "latitude": 37.59664020615429
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 549",
+    "status": "ok",
+    "longitude": 126.93845490378797,
+    "latitude": 37.596424211005115
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 547",
+    "status": "ok",
+    "longitude": 126.93876572322301,
+    "latitude": 37.59621822248022
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 499",
+    "status": "ok",
+    "longitude": 126.94080796394289,
+    "latitude": 37.592444059700945
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 489",
+    "status": "ok",
+    "longitude": 126.94093636746189,
+    "latitude": 37.59168720416918
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 481",
+    "status": "ok",
+    "longitude": 126.94157099309997,
+    "latitude": 37.590867271600175
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 463",
+    "status": "ok",
+    "longitude": 126.94273449223563,
+    "latitude": 37.58962418245446
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 461",
+    "status": "ok",
+    "longitude": 126.943037406126,
+    "latitude": 37.58937401912099
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 449",
+    "status": "ok",
+    "longitude": 126.94401745031985,
+    "latitude": 37.58861500343027
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 447",
+    "status": "ok",
+    "longitude": 126.94416512248216,
+    "latitude": 37.588504190405
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 441",
+    "status": "ok",
+    "longitude": 126.94459577622524,
+    "latitude": 37.588124863876416
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 439",
+    "status": "ok",
+    "longitude": 126.94472327051702,
+    "latitude": 37.58801509574147
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 407",
+    "status": "ok",
+    "longitude": 126.94695357104862,
+    "latitude": 37.58592253679791
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 397",
+    "status": "ok",
+    "longitude": 126.9474473135328,
+    "latitude": 37.58513469476449
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 391",
+    "status": "ok",
+    "longitude": 126.94820152519964,
+    "latitude": 37.58471016256744
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 387",
+    "status": "ok",
+    "longitude": 126.94849606349844,
+    "latitude": 37.58440119625544
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 377",
+    "status": "ok",
+    "longitude": 126.94909453393588,
+    "latitude": 37.58371030768285
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 371",
+    "status": "ok",
+    "longitude": 126.94948985834719,
+    "latitude": 37.58327689261897
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 369",
+    "status": "ok",
+    "longitude": 126.94968177619617,
+    "latitude": 37.58310707760349
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 363",
+    "status": "ok",
+    "longitude": 126.94979885687104,
+    "latitude": 37.58276589851859
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 357",
+    "status": "ok",
+    "longitude": 126.94952270067695,
+    "latitude": 37.58226417511042
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 335-1",
+    "status": "ok",
+    "longitude": 126.95145360914098,
+    "latitude": 37.580525607923335
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 325",
+    "status": "ok",
+    "longitude": 126.95223092448309,
+    "latitude": 37.57985212831978
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 317",
+    "status": "ok",
+    "longitude": 126.95270733420935,
+    "latitude": 37.57940071504527
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 315",
+    "status": "ok",
+    "longitude": 126.95278110017753,
+    "latitude": 37.57931797688846
+  },
+  {
+    "address": "서울특별시 서대문구 현저동 1-150 (고가밑)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 현저동 1-240",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 현저동 1-4",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 251(독립공원 일대)",
+    "status": "ok",
+    "longitude": 126.95719397689021,
+    "latitude": 37.57455821681878
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 251(독립문역 사거리 일대)",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 영천동 263",
+    "status": "not_found",
+    "longitude": null,
+    "latitude": null
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 205-1",
+    "status": "ok",
+    "longitude": 126.96080609065707,
+    "latitude": 37.57133976349303
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 153",
+    "status": "ok",
+    "longitude": 126.9643719216316,
+    "latitude": 37.5678670294886
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 113",
+    "status": "ok",
+    "longitude": 126.96714715082875,
+    "latitude": 37.564882535733446
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 111",
+    "status": "ok",
+    "longitude": 126.96723828387002,
+    "latitude": 37.56480590666787
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 107",
+    "status": "ok",
+    "longitude": 126.96748861870024,
+    "latitude": 37.564468704062165
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 97",
+    "status": "ok",
+    "longitude": 126.9678943008119,
+    "latitude": 37.56273456788646
+  },
+  {
+    "address": "서울특별시 서대문구 통일로 87",
+    "status": "ok",
+    "longitude": 126.96851589962753,
+    "latitude": 37.56277261281883
+  }
+]

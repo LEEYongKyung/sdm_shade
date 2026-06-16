@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+backups/
+reports/
+qa-screenshot*.png
+server/uploads/*
+!server/uploads/.gitkeep
