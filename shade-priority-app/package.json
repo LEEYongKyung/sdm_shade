@@ -11,6 +11,9 @@
     "preview": "vite preview --host 127.0.0.1",
     "db:migrate": "node server/scripts/migrate.js",
     "db:import": "node server/scripts/importLocalData.js",
+    "db:import:ngii-sidewalks": "node server/scripts/importNgiiSidewalkLines.js",
+    "db:import:road-address": "node server/scripts/importRoadAddressData.js",
+    "db:sync:crosswalk-contexts": "node server/scripts/syncCrosswalkContexts.js",
     "geocode:sidewalks": "node server/scripts/geocodeSidewalksLocal.js",
     "data:compare": "node server/scripts/compareOpenApiLocalData.js"
   },

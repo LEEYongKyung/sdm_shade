@@ -124,6 +124,21 @@ CREATE TABLE IF NOT EXISTS sidewalk_segments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS ngii_sidewalk_lines (
+  id BIGSERIAL PRIMARY KEY,
+  ufid TEXT UNIQUE NOT NULL,
+  width_m DOUBLE PRECISION,
+  material_code TEXT,
+  bicycle_yn_code TEXT,
+  kind_code TEXT,
+  integrated_code TEXT,
+  production_info TEXT,
+  geom GEOMETRY(LineString, 5179) NOT NULL,
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS scoring_rules (
   id TEXT PRIMARY KEY,
   label TEXT NOT NULL,
@@ -176,6 +191,73 @@ CREATE INDEX IF NOT EXISTS crosswalks_geom_idx ON crosswalks USING GIST (geom);
 CREATE INDEX IF NOT EXISTS cooling_shelters_geom_idx ON cooling_shelters USING GIST (geom);
 CREATE INDEX IF NOT EXISTS intersections_geom_idx ON intersections USING GIST (geom);
 CREATE INDEX IF NOT EXISTS shade_facilities_geom_idx ON shade_facilities USING GIST (geom);
+CREATE INDEX IF NOT EXISTS ngii_sidewalk_lines_geom_idx ON ngii_sidewalk_lines USING GIST (geom);
+CREATE INDEX IF NOT EXISTS ngii_sidewalk_lines_kind_width_idx ON ngii_sidewalk_lines (kind_code, width_m);
+
+CREATE TABLE IF NOT EXISTS crosswalk_contexts (
+  id BIGSERIAL PRIMARY KEY,
+  node_id TEXT UNIQUE NOT NULL REFERENCES crosswalks(node_id) ON DELETE CASCADE,
+  longitude DOUBLE PRECISION NOT NULL,
+  latitude DOUBLE PRECISION NOT NULL,
+  road_address TEXT,
+  parcel_address TEXT,
+  road_name TEXT,
+  road_code TEXT,
+  legal_dong_name TEXT,
+  legal_dong_code TEXT,
+  admin_dong_name TEXT,
+  admin_dong_code TEXT,
+  match_status TEXT NOT NULL DEFAULT 'pending',
+  confidence TEXT NOT NULL DEFAULT 'NONE',
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  fetched_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS crosswalk_contexts_road_name_idx ON crosswalk_contexts (road_name);
+CREATE INDEX IF NOT EXISTS crosswalk_contexts_legal_dong_name_idx ON crosswalk_contexts (legal_dong_name);
+
+CREATE TABLE IF NOT EXISTS road_address_segments (
+  id BIGSERIAL PRIMARY KEY,
+  sig_cd TEXT NOT NULL,
+  rds_man_no BIGINT NOT NULL,
+  road_name TEXT,
+  road_name_code TEXT,
+  english_road_name TEXT,
+  road_class_code TEXT,
+  dependent_section_code TEXT,
+  road_width_m DOUBLE PRECISION,
+  road_length_m DOUBLE PRECISION,
+  start_location TEXT,
+  end_location TEXT,
+  announced_date TEXT,
+  operation_date TEXT,
+  geom GEOMETRY(Geometry, 5179) NOT NULL,
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (sig_cd, rds_man_no)
+);
+
+CREATE TABLE IF NOT EXISTS road_width_polygons (
+  id BIGSERIAL PRIMARY KEY,
+  sig_cd TEXT NOT NULL,
+  rw_sn BIGINT NOT NULL,
+  operation_date TEXT,
+  geom GEOMETRY(Geometry, 5179) NOT NULL,
+  area_sqm DOUBLE PRECISION GENERATED ALWAYS AS (ST_Area(geom)) STORED,
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (sig_cd, rw_sn)
+);
+
+CREATE INDEX IF NOT EXISTS road_address_segments_geom_idx ON road_address_segments USING GIST (geom);
+CREATE INDEX IF NOT EXISTS road_address_segments_name_idx ON road_address_segments (road_name);
+CREATE INDEX IF NOT EXISTS road_address_segments_sig_idx ON road_address_segments (sig_cd);
+CREATE INDEX IF NOT EXISTS road_width_polygons_geom_idx ON road_width_polygons USING GIST (geom);
+CREATE INDEX IF NOT EXISTS road_width_polygons_sig_idx ON road_width_polygons (sig_cd);
 
 CREATE TABLE IF NOT EXISTS app_users (
   id BIGSERIAL PRIMARY KEY,

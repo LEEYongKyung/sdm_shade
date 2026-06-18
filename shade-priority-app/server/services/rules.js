@@ -2,7 +2,7 @@ export const scoringRules = [
   {
     id: "sidewalk_width_required",
     label: "인도 폭 3.5m 이상",
-    description: "그늘막 설치 기준의 필수 조건입니다. 미달 후보지는 자동 제외됩니다.",
+    description: "국토지리정보원 인도 데이터 기준 필수 설치 조건입니다. 미달 후보지는 자동 제외됩니다.",
     maxScore: 0,
     category: "필수",
     enabled: true,
@@ -10,64 +10,44 @@ export const scoringRules = [
     sortOrder: 10
   },
   {
-    id: "sidewalk_width_bonus",
-    label: "충분한 보도폭",
-    description: "3.5m 이상 1점, 4.0m 이상 2점",
-    maxScore: 2,
+    id: "major_road",
+    label: "도로/간선도로성",
+    description: "도로명주소 도로구간과 실폭도로 기준. 주도로 25m 이상 5점, 주도로 15m 이상 4점, 12m 이상 3점, 주도로 또는 8m 이상 2점, 기타 1점",
+    maxScore: 5,
     category: "입지",
     enabled: true,
     locked: false,
     sortOrder: 20
   },
   {
-    id: "major_road",
-    label: "주요 간선도로/대로변",
-    description: "주요 간선도로와 대로변 횡단보도 인접성",
-    maxScore: 3,
-    category: "입지",
+    id: "intersection",
+    label: "교차로/사거리 인접",
+    description: "50m 이내 5점, 50~100m 4점, 100~150m 2점",
+    maxScore: 5,
+    category: "보행",
     enabled: true,
     locked: false,
     sortOrder: 30
   },
   {
-    id: "intersection",
-    label: "교차로/사거리 인접",
-    description: "50m 이내 3점, 50~100m 2점",
-    maxScore: 3,
-    category: "보행",
+    id: "elderly_density",
+    label: "고령자 밀집 지역",
+    description: "법정동 기준 65세 이상 인구 비율 상위 20% 6점, 20~40% 4점, 40~60% 2점. 법정동 내 여러 행정동이 있으면 가장 높은 행정동 비율을 적용합니다.",
+    maxScore: 6,
+    category: "수요",
     enabled: true,
     locked: false,
     sortOrder: 40
   },
   {
-    id: "crosswalk_match",
-    label: "대로변 횡단보도 DB 일치",
-    description: "서울시 대로변 횡단보도 위치정보 기반 기본 후보지",
-    maxScore: 2,
-    category: "보행",
+    id: "cooling_shelter_gap",
+    label: "무더위쉼터 접근 부족",
+    description: "300m 초과 4점, 150~300m 2점, 150m 이내 0점",
+    maxScore: 4,
+    category: "수요",
     enabled: true,
     locked: false,
     sortOrder: 50
-  },
-  {
-    id: "elderly_density",
-    label: "고령자 밀집 지역",
-    description: "행정동별 65세 이상 인구 비중 상위권",
-    maxScore: 2,
-    category: "수요",
-    enabled: true,
-    locked: false,
-    sortOrder: 60
-  },
-  {
-    id: "cooling_shelter_gap",
-    label: "무더위쉼터 접근 부족",
-    description: "300m 이내 쉼터 없음 2점, 300~500m 1점",
-    maxScore: 2,
-    category: "수요",
-    enabled: true,
-    locked: false,
-    sortOrder: 70
   },
   {
     id: "existing_shade_exclusion",
@@ -77,7 +57,7 @@ export const scoringRules = [
     category: "필수",
     enabled: true,
     locked: true,
-    sortOrder: 80
+    sortOrder: 60
   }
 ];
 

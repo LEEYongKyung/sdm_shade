@@ -8,7 +8,7 @@ export async function getRules() {
 
 export async function getCandidates({ enabledRuleIds, mode }) {
   const limitsByMode = {
-    selected: "100",
+    selected: "1000",
     review: "200",
     excluded: "500",
     all: "500"

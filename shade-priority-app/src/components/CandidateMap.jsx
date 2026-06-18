@@ -26,6 +26,7 @@ export function CandidateMap({ candidates, existingShades = [], selectedCandidat
               <span className={`status-pill ${statusClass(candidate.status)}`}>{statusLabel(candidate.status)}</span>
               <dl>
                 <div><dt>총점</dt><dd>{number(candidate.totalScore)}</dd></div>
+                <div><dt>도로</dt><dd>{roadText(candidate)}</dd></div>
                 <div><dt>보도폭</dt><dd>{candidate.sidewalkWidthM ? `${candidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
                 <div><dt>기존 그늘막</dt><dd>{meters(candidate.nearestExistingShadeM)}</dd></div>
                 <div><dt>교차로</dt><dd>{meters(candidate.nearestIntersectionM)}</dd></div>
@@ -105,4 +106,10 @@ function markerStyle(candidate) {
     fillColor: "#ef4444",
     fillOpacity: 0.76
   };
+}
+
+function roadText(candidate) {
+  const width = candidate.roadEffectiveWidthM ?? candidate.roadWidthM;
+  const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
+  return `${candidate.roadName || "-"} / ${widthText}`;
 }

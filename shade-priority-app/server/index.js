@@ -1,14 +1,16 @@
 import express from "express";
 import multer from "multer";
 import fs from "node:fs";
-import path from "node:path";
 import { config } from "./config.js";
 import { dbAvailable, query } from "./db/pool.js";
-import { parseInstalledShadeFile, loadLocalData, clearCache } from "./services/dataStore.js";
-import { scoreCandidates } from "./services/scoring.js";
-import { scoringRules } from "./services/rules.js";
+import { clearCache, loadLocalData, parseInstalledShadeFile } from "./services/dataStore.js";
+import { loadCrosswalkContexts } from "./services/crosswalkContext.js";
 import { geocodeAddress } from "./services/geocoding.js";
 import { nearestDistanceMeters } from "./services/geo.js";
+import { loadNgiiSidewalkMatches } from "./services/ngiiSidewalkMatch.js";
+import { loadRoadAddressMatches } from "./services/roadAddressMatch.js";
+import { scoringRules } from "./services/rules.js";
+import { scoreCandidates } from "./services/scoring.js";
 
 fs.mkdirSync(config.uploadDir, { recursive: true });
 
@@ -28,6 +30,9 @@ app.get("/api/health", async (_req, res) => {
       shelters: data.shelters.length,
       intersections: data.intersections.length,
       sidewalks: data.sidewalks.length,
+      ngiiSidewalkLines: await countNgiiSidewalkLines(),
+      roadAddressSegments: await countTable("road_address_segments"),
+      roadWidthPolygons: await countTable("road_width_polygons"),
       existingShades: data.existingShades.length + uploadedShades.length
     }
   });
@@ -37,12 +42,11 @@ app.get("/api/rules", (_req, res) => {
   res.json({ rules: scoringRules });
 });
 
-app.get("/api/candidates", (req, res) => {
+app.get("/api/candidates", async (req, res) => {
   const enabled = parseEnabledRules(req.query.enabled);
   const limit = Number(req.query.limit || 100);
   const mode = String(req.query.mode || "selected");
-  const data = withUploadedShades(loadLocalData());
-  const result = scoreCandidates(data, enabled);
+  const result = scoreCandidates(await prepareScoringData(), enabled);
   const rows = rowsForMode(result, mode);
 
   res.json({
@@ -120,11 +124,10 @@ app.post("/api/geocode/address", async (req, res) => {
   }
 });
 
-app.get("/api/export/candidates.csv", (req, res) => {
+app.get("/api/export/candidates.csv", async (req, res) => {
   const enabled = parseEnabledRules(req.query.enabled);
   const mode = String(req.query.mode || "selected");
-  const data = withUploadedShades(loadLocalData());
-  const result = scoreCandidates(data, enabled);
+  const result = scoreCandidates(await prepareScoringData(), enabled);
   const rows = rowsForMode(result, mode);
   const csv = toCsv(rows);
 
@@ -159,6 +162,36 @@ function withUploadedShades(data) {
   };
 }
 
+async function prepareScoringData() {
+  const data = withUploadedShades(loadLocalData());
+  return {
+    ...data,
+    crosswalkContexts: await loadCrosswalkContexts(),
+    sidewalkMatches: await loadNgiiSidewalkMatches(data.crosswalks),
+    roadMatches: await loadRoadAddressMatches(data.crosswalks)
+  };
+}
+
+async function countNgiiSidewalkLines() {
+  if (!(await dbAvailable())) return 0;
+  try {
+    const result = await query("SELECT count(*)::int AS count FROM ngii_sidewalk_lines");
+    return result.rows[0]?.count || 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function countTable(tableName) {
+  if (!(await dbAvailable())) return 0;
+  try {
+    const result = await query(`SELECT count(*)::int AS count FROM ${tableName}`);
+    return result.rows[0]?.count || 0;
+  } catch {
+    return 0;
+  }
+}
+
 function toCsv(rows) {
   const header = [
     "순위",
@@ -166,9 +199,13 @@ function toCsv(rows) {
     "노드ID",
     "상태",
     "총점",
-    "보도폭",
-    "보도폭매칭신뢰도",
-    "보도구간",
+    "도로명",
+    "도로폭",
+    "인도폭",
+    "도로간선도로성점수",
+    "교차로점수",
+    "고령자점수",
+    "쉼터점수",
     "기존그늘막거리m",
     "무더위쉼터거리m",
     "교차로거리m",
@@ -184,9 +221,13 @@ function toCsv(rows) {
       row.nodeId,
       statusLabel(row.status),
       row.totalScore,
+      row.roadName || "",
+      row.roadEffectiveWidthM ?? row.roadWidthM ?? "",
       row.sidewalkWidthM ?? "",
-      row.sidewalkMatchConfidence,
-      row.sidewalkLocationRange,
+      row.breakdown?.major_road?.score ?? 0,
+      row.breakdown?.intersection?.score ?? 0,
+      row.breakdown?.elderly_density?.score ?? 0,
+      row.breakdown?.cooling_shelter_gap?.score ?? 0,
       round(row.nearestExistingShadeM),
       round(row.nearestCoolingShelterM),
       round(row.nearestIntersectionM),

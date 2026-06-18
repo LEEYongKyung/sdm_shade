@@ -10,9 +10,9 @@ import {
   RefreshCw,
   Settings2
 } from "lucide-react";
+import { CandidateMap } from "./components/CandidateMap.jsx";
 import { getCandidates, getExistingShades, getHealth, getRules, uploadInstalledShades } from "./lib/api.js";
 import { meters, number, statusClass, statusLabel } from "./lib/format.js";
-import { CandidateMap } from "./components/CandidateMap.jsx";
 
 const modes = [
   { id: "selected", label: "선정 후보" },
@@ -54,10 +54,11 @@ export default function App() {
       if (mode === "existing") {
         const payload = await getExistingShades();
         setExistingShades(payload.shades);
-        setResult((current) => current || { summary: {} });
+        setResult((current) => current || { summary: {}, candidates: [] });
         setSelectedCandidate(null);
         return;
       }
+
       const [payload, shadesPayload] = await Promise.all([
         getCandidates({ enabledRuleIds, mode }),
         mode === "all" ? getExistingShades() : Promise.resolve({ shades: [] })
@@ -90,22 +91,20 @@ export default function App() {
     event.target.value = "";
   }
 
-function exportXlsx() {
+  function exportXlsx() {
     const rows = (result?.candidates || []).map((row, index) => ({
       순위: row.rank || index + 1,
       행정동: row.dongName,
       노드ID: row.nodeId,
       상태: statusLabel(row.status),
       총점: row.totalScore,
-      보도폭: row.sidewalkWidthM ?? "",
-      보도폭점수: scoreOf(row, "sidewalk_width_bonus"),
-      주요도로점수: scoreOf(row, "major_road"),
-      대로변횡단보도점수: scoreOf(row, "crosswalk_match"),
+      도로명: row.roadName || "",
+      도로폭: row.roadEffectiveWidthM ?? row.roadWidthM ?? "",
+      인도폭: row.sidewalkWidthM ?? "",
+      도로간선도로성점수: scoreOf(row, "major_road"),
+      교차로점수: scoreOf(row, "intersection"),
       고령자점수: scoreOf(row, "elderly_density"),
       쉼터점수: scoreOf(row, "cooling_shelter_gap"),
-      교차로점수: scoreOf(row, "intersection"),
-      보도폭매칭신뢰도: row.sidewalkMatchConfidence,
-      보도구간: row.sidewalkLocationRange,
       기존그늘막거리m: Math.round(row.nearestExistingShadeM || 0),
       무더위쉼터거리m: Math.round(row.nearestCoolingShelterM || 0),
       교차로거리m: Math.round(row.nearestIntersectionM || 0),
@@ -124,9 +123,10 @@ function exportXlsx() {
     return row.breakdown?.[ruleId]?.score ?? 0;
   }
 
-  function valueWithScore(value, score, suffix = "") {
-    const display = value || value === 0 ? `${value}${suffix}` : "-";
-    return `${display} (+${score})`;
+  function roadLabel(row) {
+    const width = row.roadEffectiveWidthM ?? row.roadWidthM;
+    const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
+    return `${row.roadName || "-"} / ${widthText} (+${scoreOf(row, "major_road")})`;
   }
 
   const summaryCards = useMemo(() => {
@@ -158,13 +158,13 @@ function exportXlsx() {
         <header className="topbar">
           <div>
             <h1>서대문구 그늘막 설치 위치 선정 시뮬레이션</h1>
-            <p>대로변 횡단보도를 기본 후보로 두고 보도폭, 교차로, 고령자, 쉼터, 기존 설치 위치를 재평가합니다.</p>
+            <p>대로변 횡단보도를 기본 후보로 두고 인도폭, 교차로, 고령자, 쉼터, 기존 설치 위치를 재평가합니다.</p>
           </div>
           <div className="topbar-actions">
             <span className={`db-badge ${health?.dbAvailable ? "ok" : "warn"}`}>
               {health?.dbAvailable ? "PostgreSQL 연결" : "로컬 데이터 모드"}
             </span>
-            <button className="icon-button" onClick={refreshCandidates} title="재산정">
+            <button className="icon-button" onClick={refreshCandidates} title="재계산">
               <RefreshCw size={18} />
             </button>
           </div>
@@ -183,11 +183,7 @@ function exportXlsx() {
           <div className="map-panel">
             <div className="map-mode-tabs" role="tablist" aria-label="지도 후보 상태 필터">
               {modes.map((item) => (
-                <button
-                  key={item.id}
-                  className={mode === item.id ? "is-active" : ""}
-                  onClick={() => setMode(item.id)}
-                >
+                <button key={item.id} className={mode === item.id ? "is-active" : ""} onClick={() => setMode(item.id)}>
                   {item.label}
                 </button>
               ))}
@@ -204,11 +200,7 @@ function exportXlsx() {
             <div className="panel-header">
               <div className="tabs" role="tablist">
                 {modes.map((item) => (
-                  <button
-                    key={item.id}
-                    className={mode === item.id ? "is-active" : ""}
-                    onClick={() => setMode(item.id)}
-                  >
+                  <button key={item.id} className={mode === item.id ? "is-active" : ""} onClick={() => setMode(item.id)}>
                     {item.label}
                   </button>
                 ))}
@@ -227,25 +219,24 @@ function exportXlsx() {
                     <th>행정동</th>
                     <th>상태</th>
                     <th>총점</th>
-                    <th>보도폭</th>
-                    <th>주요도로</th>
-                    <th>횡단보도</th>
-                    <th>고령자</th>
-                    <th>기존</th>
-                    <th>쉼터</th>
+                    <th>인도폭</th>
+                    <th>도로/간선</th>
                     <th>교차로</th>
+                    <th>고령자</th>
+                    <th>쉼터</th>
+                    <th>기존</th>
                   </tr>
                 </thead>
                 <tbody>
                   {mode === "existing" ? (
                     <tr>
-                      <td colSpan="11" className="empty-cell">
+                      <td colSpan="10" className="empty-cell">
                         기존 그늘막 {existingShades.length.toLocaleString()}개가 지도에 검은색으로 표시됩니다.
                       </td>
                     </tr>
                   ) : loading ? (
                     <tr>
-                      <td colSpan="11" className="empty-cell">재산정 중...</td>
+                      <td colSpan="10" className="empty-cell">재계산 중...</td>
                     </tr>
                   ) : (
                     (result?.candidates || []).map((row, index) => (
@@ -263,13 +254,12 @@ function exportXlsx() {
                           <span className={`status-pill ${statusClass(row.status)}`}>{statusLabel(row.status)}</span>
                         </td>
                         <td>{number(row.totalScore)}</td>
-                        <td>{valueWithScore(row.sidewalkWidthM, scoreOf(row, "sidewalk_width_bonus"), "m")}</td>
-                        <td>{`+${scoreOf(row, "major_road")}`}</td>
-                        <td>{`+${scoreOf(row, "crosswalk_match")}`}</td>
-                        <td>{`+${scoreOf(row, "elderly_density")}`}</td>
-                        <td>{meters(row.nearestExistingShadeM)}</td>
-                        <td>{`${meters(row.nearestCoolingShelterM)} (+${scoreOf(row, "cooling_shelter_gap")})`}</td>
+                        <td>{row.sidewalkWidthM ? `${row.sidewalkWidthM}m` : "-"}</td>
+                        <td>{roadLabel(row)}</td>
                         <td>{`${meters(row.nearestIntersectionM)} (+${scoreOf(row, "intersection")})`}</td>
+                        <td>{`+${scoreOf(row, "elderly_density")}`}</td>
+                        <td>{`${meters(row.nearestCoolingShelterM)} (+${scoreOf(row, "cooling_shelter_gap")})`}</td>
+                        <td>{meters(row.nearestExistingShadeM)}</td>
                       </tr>
                     ))
                   )}
@@ -294,8 +284,9 @@ function exportXlsx() {
               </span>
               <dl>
                 <div><dt>총점</dt><dd>{number(selectedCandidate.totalScore)}</dd></div>
-                <div><dt>보도폭</dt><dd>{selectedCandidate.sidewalkWidthM ? `${selectedCandidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
-                <div><dt>보도 매칭</dt><dd>{selectedCandidate.sidewalkMatchConfidence}</dd></div>
+                <div><dt>도로</dt><dd>{roadLabel(selectedCandidate)}</dd></div>
+                <div><dt>인도폭</dt><dd>{selectedCandidate.sidewalkWidthM ? `${selectedCandidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
+                <div><dt>인도 매칭</dt><dd>{selectedCandidate.sidewalkMatchConfidence}</dd></div>
                 <div><dt>기존 그늘막</dt><dd>{meters(selectedCandidate.nearestExistingShadeM)}</dd></div>
               </dl>
               {(selectedCandidate.exclusionReason || selectedCandidate.reviewFlags.length > 0) && (
@@ -351,7 +342,7 @@ function exportXlsx() {
               <input type="file" accept=".xlsx,.xls,.csv" onChange={handleUpload} />
             </label>
           </div>
-          <p>{uploadState.message || "엑셀/CSV 업로드 시 DB 또는 로컬 실행 상태에 반영됩니다."}</p>
+          <p>{uploadState.message || "엑셀/CSV 업로드 시 DB 또는 로컬 실행 상태에 반영합니다."}</p>
         </section>
       </aside>
     </div>
