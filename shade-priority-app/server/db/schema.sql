@@ -89,7 +89,10 @@ CREATE TABLE IF NOT EXISTS elderly_population (
 CREATE TABLE IF NOT EXISTS shade_facilities (
   id BIGSERIAL PRIMARY KEY,
   management_no TEXT,
+  admin_dong_name TEXT,
   name TEXT,
+  road_address TEXT,
+  lot_address TEXT,
   installed_year INTEGER,
   source_type TEXT NOT NULL DEFAULT 'existing',
   longitude DOUBLE PRECISION,
@@ -97,6 +100,7 @@ CREATE TABLE IF NOT EXISTS shade_facilities (
   geom GEOGRAPHY(Point, 4326),
   status TEXT NOT NULL DEFAULT 'active',
   raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -259,6 +263,21 @@ CREATE INDEX IF NOT EXISTS road_address_segments_sig_idx ON road_address_segment
 CREATE INDEX IF NOT EXISTS road_width_polygons_geom_idx ON road_width_polygons USING GIST (geom);
 CREATE INDEX IF NOT EXISTS road_width_polygons_sig_idx ON road_width_polygons (sig_cd);
 
+CREATE TABLE IF NOT EXISTS legal_dong_boundaries (
+  id BIGSERIAL PRIMARY KEY,
+  emd_cd TEXT UNIQUE NOT NULL,
+  sig_cd TEXT NOT NULL,
+  emd_name TEXT NOT NULL,
+  sgg_oid DOUBLE PRECISION,
+  geom GEOMETRY(Geometry, 5186) NOT NULL,
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS legal_dong_boundaries_geom_idx ON legal_dong_boundaries USING GIST (geom);
+CREATE INDEX IF NOT EXISTS legal_dong_boundaries_sig_name_idx ON legal_dong_boundaries (sig_cd, emd_name);
+
 CREATE TABLE IF NOT EXISTS app_users (
   id BIGSERIAL PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
@@ -306,6 +325,35 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS installed_shade_upload_batches (
+  id BIGSERIAL PRIMARY KEY,
+  file_name TEXT,
+  installed_year INTEGER,
+  uploaded_by TEXT,
+  total_rows INTEGER NOT NULL DEFAULT 0,
+  inserted_count INTEGER NOT NULL DEFAULT 0,
+  updated_count INTEGER NOT NULL DEFAULT 0,
+  skipped_count INTEGER NOT NULL DEFAULT 0,
+  failed_count INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'completed',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  rolled_back_at TIMESTAMPTZ,
+  rolled_back_by TEXT
+);
+
+CREATE TABLE IF NOT EXISTS installed_shade_upload_changes (
+  id BIGSERIAL PRIMARY KEY,
+  batch_id BIGINT NOT NULL REFERENCES installed_shade_upload_batches(id) ON DELETE CASCADE,
+  row_number INTEGER,
+  management_no TEXT,
+  action TEXT NOT NULL,
+  before_data JSONB,
+  after_data JSONB,
+  error_message TEXT,
+  raw JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 ALTER TABLE crosswalks ADD COLUMN IF NOT EXISTS source_key TEXT;
 ALTER TABLE crosswalks ADD COLUMN IF NOT EXISTS source_origin TEXT NOT NULL DEFAULT 'local';
 ALTER TABLE crosswalks ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
@@ -330,6 +378,11 @@ ALTER TABLE road_routes ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFA
 ALTER TABLE road_routes ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ;
 ALTER TABLE road_routes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
+ALTER TABLE shade_facilities ADD COLUMN IF NOT EXISTS admin_dong_name TEXT;
+ALTER TABLE shade_facilities ADD COLUMN IF NOT EXISTS road_address TEXT;
+ALTER TABLE shade_facilities ADD COLUMN IF NOT EXISTS lot_address TEXT;
+ALTER TABLE shade_facilities ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS name TEXT;
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS memo TEXT;
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'draft';
@@ -342,5 +395,8 @@ ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS finalized_at TIMESTAMPTZ;
 
 CREATE UNIQUE INDEX IF NOT EXISTS cooling_shelters_source_key_idx ON cooling_shelters (source_key) WHERE source_key IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS road_routes_source_key_idx ON road_routes (source_key) WHERE source_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS shade_facilities_management_no_uidx ON shade_facilities (management_no) WHERE management_no IS NOT NULL AND trim(management_no) <> '' AND status = 'active';
 CREATE INDEX IF NOT EXISTS data_sync_runs_started_at_idx ON data_sync_runs (started_at DESC);
 CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs (created_at DESC);
+CREATE INDEX IF NOT EXISTS installed_shade_upload_batches_created_at_idx ON installed_shade_upload_batches (created_at DESC);
+CREATE INDEX IF NOT EXISTS installed_shade_upload_changes_batch_id_idx ON installed_shade_upload_changes (batch_id, id DESC);

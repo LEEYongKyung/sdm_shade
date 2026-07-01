@@ -26,5 +26,8 @@ export const config = {
   roadWidthPolygonDir: process.env.ROAD_WIDTH_POLYGON_DIR
     ? path.resolve(appRoot, process.env.ROAD_WIDTH_POLYGON_DIR)
     : path.resolve(appRoot, "..", "(\ub3c4\ub85c\uba85\uc8fc\uc18c)\uc2e4\ud3ed\ub3c4\ub85c_\uc11c\uc6b8"),
+  legalDongBoundaryDir: process.env.LEGAL_DONG_BOUNDARY_DIR
+    ? path.resolve(appRoot, process.env.LEGAL_DONG_BOUNDARY_DIR)
+    : path.resolve(appRoot, "..", "\ubc95\uc815\ub3d9 \uacbd\uacc4 \ub370\uc774\ud130"),
   uploadDir: path.resolve(__dirname, "uploads")
 };

@@ -72,7 +72,7 @@ function evaluateCandidate(crosswalk, data, enabled) {
   addScore("elderly_density", enabled, breakdown, elderlyScore(elderly));
   addScore("cooling_shelter_gap", enabled, breakdown, shelterGapScore(nearestCoolingShelterM));
 
-  if (status === "selected" && sidewalkMatch?.confidence !== "HIGH") {
+  if (status === "selected" && shouldReviewSidewalkConfidence(sidewalkMatch?.confidence)) {
     reviewFlags.push(`인도 폭 매칭 신뢰도 ${sidewalkMatch?.confidence || "NONE"}`);
   }
   if (status === "selected" && enabled.has("major_road") && !roadMatch && !context?.roadName) {
@@ -118,6 +118,10 @@ function addScore(ruleId, enabled, breakdown, item) {
   breakdown[ruleId] = typeof item === "object" && item !== null
     ? { score: Number(item.score) || 0, ...item }
     : { score: Number(item) || 0 };
+}
+
+function shouldReviewSidewalkConfidence(confidence) {
+  return confidence === "LOW" || confidence === "NONE" || !confidence;
 }
 
 function roadHierarchyScore(roadMatch, context, roads) {
@@ -213,6 +217,14 @@ function buildLegalDongElderlyIndex(elderlyRows, crosswalkContexts = new Map()) 
     }
     adminNamesByLegalDong.get(legalDongName).add(adminDongName);
   }
+  for (const [legalDongName, adminDongNames] of legalDongAdminAliases()) {
+    if (!adminNamesByLegalDong.has(legalDongName)) {
+      adminNamesByLegalDong.set(legalDongName, new Set());
+    }
+    for (const adminDongName of adminDongNames) {
+      adminNamesByLegalDong.get(legalDongName).add(adminDongName);
+    }
+  }
 
   const legalDongNames = new Set([
     ...elderlyRows.map((row) => normalizeLegalDongName(row.dongName)).filter(Boolean),
@@ -252,7 +264,34 @@ function normalizeLegalDongName(value) {
 }
 
 function normalizeAdminDongName(value) {
-  return String(value || "").replace(/제(?=\d+동$)/, "").trim();
+  const text = String(value || "").replace(/\s+/g, "").trim();
+  if (text.startsWith("홍제")) return text.replace("홍제제", "홍제");
+  return text.replace(/제(?=\d+동$)/, "").trim();
+}
+
+function legalDongAdminAliases() {
+  return new Map([
+    ["남가좌동", ["남가좌1동", "남가좌2동"]],
+    ["북가좌동", ["북가좌1동", "북가좌2동"]],
+    ["홍은동", ["홍은1동", "홍은2동"]],
+    ["홍제동", ["홍제1동", "홍제2동", "홍제3동"]],
+    ["봉원동", ["신촌동"]],
+    ["대신동", ["신촌동"]],
+    ["대현동", ["신촌동"]],
+    ["창천동", ["신촌동"]],
+    ["신촌동", ["신촌동"]],
+    ["충정로2가", ["충현동"]],
+    ["충정로3가", ["충현동"]],
+    ["합동", ["충현동"]],
+    ["미근동", ["충현동"]],
+    ["냉천동", ["천연동"]],
+    ["영천동", ["천연동"]],
+    ["옥천동", ["천연동"]],
+    ["현저동", ["천연동"]],
+    ["천연동", ["천연동"]],
+    ["북아현동", ["북아현동"]],
+    ["연희동", ["연희동"]]
+  ]);
 }
 
 function shelterGapScore(distance) {

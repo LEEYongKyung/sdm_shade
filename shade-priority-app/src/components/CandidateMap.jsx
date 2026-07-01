@@ -1,72 +1,222 @@
-import { useEffect } from "react";
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef } from "react";
+import L from "leaflet";
+import "leaflet.markercluster";
+import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
+import selectedIcon from "../assets/icons/candidate-selected.png";
+import reviewIcon from "../assets/icons/candidate-review.svg";
+import excludedIcon from "../assets/icons/candidate-excluded.png";
+import existingShadeIcon from "../assets/icons/existing_shade.png";
+import coolingShelterIcon from "../assets/icons/cooling-shelter.png";
 import { meters, number, statusClass, statusLabel } from "../lib/format.js";
 
 const center = [37.579, 126.936];
 
-export function CandidateMap({ candidates, existingShades = [], selectedCandidate, onSelect }) {
+export function CandidateMap({
+  candidates,
+  mapLayers,
+  visibleLayers,
+  selectedCandidate,
+  onSelect,
+  onToggleLayer
+}) {
+  const markerRefs = useRef(new Map());
+  const clusterGroupRef = useRef(null);
+
   return (
-    <MapContainer center={center} zoom={13} className="candidate-map" scrollWheelZoom>
-      <TileLayer
-        attribution="&copy; OpenStreetMap"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <MapFocus candidate={selectedCandidate} />
-      {candidates.map((candidate) => (
-        <CircleMarker
-          key={candidate.nodeId}
-          center={[candidate.latitude, candidate.longitude]}
-          radius={selectedCandidate?.nodeId === candidate.nodeId ? 10 : 7}
-          pathOptions={markerStyle(candidate)}
-          eventHandlers={{ click: () => onSelect(candidate) }}
-        >
-          <Popup>
-            <div className="map-popup">
-              <strong>{candidate.dongName || "-"} · {candidate.nodeId}</strong>
-              <span className={`status-pill ${statusClass(candidate.status)}`}>{statusLabel(candidate.status)}</span>
-              <dl>
-                <div><dt>총점</dt><dd>{number(candidate.totalScore)}</dd></div>
-                <div><dt>도로</dt><dd>{roadText(candidate)}</dd></div>
-                <div><dt>보도폭</dt><dd>{candidate.sidewalkWidthM ? `${candidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
-                <div><dt>기존 그늘막</dt><dd>{meters(candidate.nearestExistingShadeM)}</dd></div>
-                <div><dt>교차로</dt><dd>{meters(candidate.nearestIntersectionM)}</dd></div>
-              </dl>
-              {(candidate.exclusionReason || candidate.reviewFlags?.length > 0) && (
-                <div className={`popup-reason ${candidate.status === "excluded" ? "is-excluded" : "is-review"}`}>
-                  <span>{candidate.status === "excluded" ? "제외 사유" : "확인 사유"}</span>
-                  <strong>{candidate.exclusionReason || candidate.reviewFlags.join(", ")}</strong>
-                </div>
-              )}
-            </div>
-          </Popup>
-        </CircleMarker>
+    <>
+      <MapContainer center={center} zoom={13} className="candidate-map" scrollWheelZoom>
+        <TileLayer
+          attribution="&copy; OpenStreetMap"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapFocus candidate={selectedCandidate} />
+        {visibleLayers.elderly && mapLayers?.elderlyDongs?.features?.length > 0 && (
+          <GeoJSON
+            key={`elderly-${mapLayers.elderlyDongs.features.length}`}
+            data={mapLayers.elderlyDongs}
+            style={elderlyDongStyle}
+            onEachFeature={bindElderlyPopup}
+          />
+        )}
+        <ClusteredMarkers
+          candidates={candidates}
+          mapLayers={mapLayers}
+          visibleLayers={visibleLayers}
+          selectedCandidate={selectedCandidate}
+          markerRefs={markerRefs}
+          clusterGroupRef={clusterGroupRef}
+          onSelect={onSelect}
+        />
+      </MapContainer>
+      <MapLayerControl visibleLayers={visibleLayers} onToggleLayer={onToggleLayer} />
+      {visibleLayers.elderly && <ElderlyLegend legend={mapLayers?.elderlyLegend || []} />}
+      <div className="map-attribution-extra">
+        Icons by Flaticon. Administrative boundary data from VWorld/국토교통부.
+      </div>
+    </>
+  );
+}
+
+function ClusteredMarkers({
+  candidates,
+  mapLayers,
+  visibleLayers,
+  selectedCandidate,
+  markerRefs,
+  clusterGroupRef,
+  onSelect
+}) {
+  const map = useMap();
+  const icons = useMemo(() => createMarkerIcons(), []);
+
+  useEffect(() => {
+    markerRefs.current.clear();
+
+    const group = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 15,
+      maxClusterRadius: 30,
+      iconCreateFunction: createClusterIcon
+    });
+
+    candidates.forEach((candidate) => {
+      if (!Number.isFinite(candidate.latitude) || !Number.isFinite(candidate.longitude)) return;
+
+      const marker = L.marker([candidate.latitude, candidate.longitude], {
+        icon: icons[candidate.status] || icons.selected,
+        title: `${candidate.dongName || ""} ${candidate.nodeId || ""}`.trim()
+      });
+
+      marker.bindPopup(candidatePopupHtml(candidate));
+      marker.on("click", () => onSelect(candidate, "map"));
+      markerRefs.current.set(candidate.nodeId, marker);
+      group.addLayer(marker);
+    });
+
+    if (visibleLayers.existingShades) {
+      (mapLayers?.existingShades || []).forEach((shade) => {
+        if (!Number.isFinite(shade.latitude) || !Number.isFinite(shade.longitude)) return;
+
+        const marker = L.marker([shade.latitude, shade.longitude], {
+          icon: icons.existingShade,
+          title: shade.managementNo || shade.name || "기존 그늘막"
+        });
+
+        marker.bindPopup(existingShadePopupHtml(shade));
+        group.addLayer(marker);
+      });
+    }
+
+    if (visibleLayers.coolingShelters) {
+      (mapLayers?.coolingShelters || []).forEach((shelter) => {
+        if (!Number.isFinite(shelter.latitude) || !Number.isFinite(shelter.longitude)) return;
+
+        const marker = L.marker([shelter.latitude, shelter.longitude], {
+          icon: icons.coolingShelter,
+          title: shelter.name || "무더위쉼터"
+        });
+
+        marker.bindPopup(coolingShelterPopupHtml(shelter));
+        group.addLayer(marker);
+      });
+    }
+
+    group.addTo(map);
+    clusterGroupRef.current = group;
+
+    return () => {
+      markerRefs.current.clear();
+      clusterGroupRef.current = null;
+      map.removeLayer(group);
+    };
+  }, [candidates, icons, map, mapLayers, markerRefs, clusterGroupRef, onSelect, visibleLayers]);
+
+  useEffect(() => {
+    if (!selectedCandidate || !clusterGroupRef.current) return;
+
+    const marker = markerRefs.current.get(selectedCandidate.nodeId);
+    if (!marker) return;
+
+    clusterGroupRef.current.zoomToShowLayer(marker, () => marker.openPopup());
+  }, [clusterGroupRef, markerRefs, selectedCandidate]);
+
+  return null;
+}
+
+function createMarkerIcons() {
+  return {
+    selected: markerIcon({ url: selectedIcon, className: "is-selected" }),
+    review_required: markerIcon({ url: reviewIcon, className: "is-review" }),
+    excluded: markerIcon({ url: excludedIcon, className: "is-excluded" }),
+    existingShade: markerIcon({ url: existingShadeIcon, className: "is-existing" }),
+    coolingShelter: markerIcon({ url: coolingShelterIcon, className: "is-shelter" })
+  };
+}
+
+function markerIcon({ url, className }) {
+  return L.icon({
+    iconUrl: url,
+    className: `map-image-icon ${className}`,
+    iconSize: [20, 20],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16]
+  });
+}
+
+function createClusterIcon(cluster) {
+  const count = cluster.getChildCount();
+  const sizeClass = count >= 100 ? "is-large" : count >= 30 ? "is-medium" : "is-small";
+
+  return L.divIcon({
+    className: `map-cluster-icon ${sizeClass}`,
+    html: `<span>${count}</span>`,
+    iconSize: [42, 42],
+    iconAnchor: [21, 21]
+  });
+}
+
+function MapLayerControl({ visibleLayers, onToggleLayer }) {
+  const layers = [
+    { id: "elderly", label: "고령자 분포", type: "swatch" },
+    { id: "existingShades", label: "기존 그늘막", icon: existingShadeIcon },
+    { id: "coolingShelters", label: "무더위쉼터", icon: coolingShelterIcon }
+  ];
+
+  return (
+    <div className="map-layer-control">
+      {layers.map((layer) => (
+        <label key={layer.id}>
+          <input
+            type="checkbox"
+            checked={Boolean(visibleLayers[layer.id])}
+            onChange={() => onToggleLayer(layer.id)}
+          />
+          {layer.icon ? (
+            <img className="map-layer-icon" src={layer.icon} alt="" aria-hidden="true" />
+          ) : (
+            <span className="map-layer-swatch" aria-hidden="true" />
+          )}
+          <span>{layer.label}</span>
+        </label>
       ))}
-      {existingShades.map((shade) => (
-        <CircleMarker
-          key={`shade-${shade.managementNo || shade.name}-${shade.longitude}-${shade.latitude}`}
-          center={[shade.latitude, shade.longitude]}
-          radius={7}
-          pathOptions={{
-            color: "#111827",
-            weight: 2,
-            fillColor: "#111827",
-            fillOpacity: 0.86
-          }}
-        >
-          <Popup>
-            <div className="map-popup">
-              <strong>{shade.managementNo || "기존 그늘막"}</strong>
-              <span className="status-pill is-existing">기존 그늘막</span>
-              <dl>
-                <div><dt>설치장소</dt><dd>{shade.name || "-"}</dd></div>
-                <div><dt>경도</dt><dd>{shade.longitude}</dd></div>
-                <div><dt>위도</dt><dd>{shade.latitude}</dd></div>
-              </dl>
-            </div>
-          </Popup>
-        </CircleMarker>
+    </div>
+  );
+}
+
+function ElderlyLegend({ legend }) {
+  if (!legend.length) return null;
+
+  return (
+    <div className="elderly-legend">
+      <strong>65세 이상 인구 비율</strong>
+      {legend.map((item) => (
+        <div key={`${item.color}-${item.label}`}>
+          <span style={{ background: item.color }} />
+          <em>{item.label}</em>
+        </div>
       ))}
-    </MapContainer>
+    </div>
   );
 }
 
@@ -83,33 +233,103 @@ function MapFocus({ candidate }) {
   return null;
 }
 
-function markerStyle(candidate) {
-  if (candidate.status === "selected") {
-    return {
-      color: "#047857",
-      weight: 2,
-      fillColor: "#10b981",
-      fillOpacity: 0.82
-    };
-  }
-  if (candidate.status === "review_required") {
-    return {
-      color: "#b45309",
-      weight: 2,
-      fillColor: "#f59e0b",
-      fillOpacity: 0.82
-    };
-  }
+function elderlyDongStyle(feature) {
   return {
-    color: "#b91c1c",
-    weight: 2,
-    fillColor: "#ef4444",
-    fillOpacity: 0.76
+    color: "#7f1d1d",
+    weight: 1,
+    opacity: 0.65,
+    fillColor: feature.properties.color || "#fee2e2",
+    fillOpacity: 0.32
   };
+}
+
+function bindElderlyPopup(feature, layer) {
+  const ratio = Number.isFinite(feature.properties.elderlyRatio)
+    ? `${Math.round(feature.properties.elderlyRatio * 1000) / 10}%`
+    : "데이터 없음";
+
+  layer.bindPopup(`
+    <div class="map-popup">
+      <strong>${escapeHtml(feature.properties.dongName)}</strong>
+      <dl>
+        <div><dt>65세 이상 비율</dt><dd>${escapeHtml(ratio)}</dd></div>
+        <div><dt>대상 행정동</dt><dd>${escapeHtml(feature.properties.sourceDongName || "-")}</dd></div>
+      </dl>
+    </div>
+  `);
+}
+
+function candidatePopupHtml(candidate) {
+  const reviewFlags = visibleReviewFlags(candidate);
+  const reason = candidate.exclusionReason || reviewFlags.join(", ");
+
+  return `
+    <div class="map-popup">
+      <strong>${escapeHtml(candidate.dongName || "-")} · ${escapeHtml(candidate.nodeId)}</strong>
+      <span class="status-pill ${statusClass(candidate.status)}">${escapeHtml(statusLabel(candidate.status))}</span>
+      <dl>
+        <div><dt>총점</dt><dd>${escapeHtml(number(candidate.totalScore))}</dd></div>
+        <div><dt>도로</dt><dd>${escapeHtml(roadText(candidate))}</dd></div>
+        <div><dt>인도폭</dt><dd>${escapeHtml(candidate.sidewalkWidthM ? `${candidate.sidewalkWidthM}m` : "데이터 없음")}</dd></div>
+        <div><dt>기존 그늘막</dt><dd>${escapeHtml(meters(candidate.nearestExistingShadeM))}</dd></div>
+        <div><dt>무더위쉼터</dt><dd>${escapeHtml(meters(candidate.nearestCoolingShelterM))}</dd></div>
+        <div><dt>교차로</dt><dd>${escapeHtml(meters(candidate.nearestIntersectionM))}</dd></div>
+      </dl>
+      ${
+        reason
+          ? `<div class="popup-reason ${candidate.status === "excluded" ? "is-excluded" : "is-review"}">
+              <span>${candidate.status === "excluded" ? "제외 사유" : "확인 사유"}</span>
+              <strong>${escapeHtml(reason)}</strong>
+            </div>`
+          : ""
+      }
+    </div>
+  `;
+}
+
+function existingShadePopupHtml(shade) {
+  return `
+    <div class="map-popup">
+      <strong>${escapeHtml(shade.managementNo || "기존 그늘막")}</strong>
+      <span class="status-pill is-existing">기존 그늘막</span>
+      <dl>
+        <div><dt>설치장소</dt><dd>${escapeHtml(shade.name || "-")}</dd></div>
+        <div><dt>경도</dt><dd>${escapeHtml(shade.longitude)}</dd></div>
+        <div><dt>위도</dt><dd>${escapeHtml(shade.latitude)}</dd></div>
+      </dl>
+    </div>
+  `;
+}
+
+function coolingShelterPopupHtml(shelter) {
+  return `
+    <div class="map-popup">
+      <strong>${escapeHtml(shelter.name || "무더위쉼터")}</strong>
+      <span class="status-pill is-shelter">무더위쉼터</span>
+      <dl>
+        <div><dt>주소</dt><dd>${escapeHtml(shelter.roadAddress || "-")}</dd></div>
+        <div><dt>경도</dt><dd>${escapeHtml(shelter.longitude)}</dd></div>
+        <div><dt>위도</dt><dd>${escapeHtml(shelter.latitude)}</dd></div>
+      </dl>
+    </div>
+  `;
 }
 
 function roadText(candidate) {
   const width = candidate.roadEffectiveWidthM ?? candidate.roadWidthM;
   const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
   return `${candidate.roadName || "-"} / ${widthText}`;
+}
+
+function visibleReviewFlags(candidate) {
+  return (candidate?.reviewFlags || []).filter((flag) => !String(flag).includes("MEDIUM"));
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

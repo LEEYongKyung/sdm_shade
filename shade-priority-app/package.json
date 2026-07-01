@@ -13,6 +13,7 @@
     "db:import": "node server/scripts/importLocalData.js",
     "db:import:ngii-sidewalks": "node server/scripts/importNgiiSidewalkLines.js",
     "db:import:road-address": "node server/scripts/importRoadAddressData.js",
+    "db:import:legal-dongs": "node server/scripts/importLegalDongBoundaries.js",
     "db:sync:crosswalk-contexts": "node server/scripts/syncCrosswalkContexts.js",
     "geocode:sidewalks": "node server/scripts/geocodeSidewalksLocal.js",
     "data:compare": "node server/scripts/compareOpenApiLocalData.js"
@@ -24,6 +25,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "lucide-react": "^0.545.0",
     "multer": "^2.0.2",
     "pg": "^8.16.3",

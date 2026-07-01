@@ -54,27 +54,90 @@ export function loadLocalData() {
 
 export function parseInstalledShadeFile(filePath, year) {
   const ext = path.extname(filePath).toLowerCase();
-  const rows =
+  const sourceRows =
     ext === ".csv"
       ? readCsv(filePath)
-      : xlsx.utils.sheet_to_json(xlsx.readFile(filePath).Sheets[xlsx.readFile(filePath).SheetNames[0]], {
-          defval: ""
-        });
+      : readInstalledShadeWorkbook(filePath);
 
-  return rows
-    .map((row, index) => {
-      const longitude = numberFrom(row["경도"] ?? row.longitude ?? row.lng);
-      const latitude = numberFrom(row["위도"] ?? row.latitude ?? row.lat);
-      return {
-        managementNo: String(row["관리번호"] ?? row["번호"] ?? row.id ?? `upload-${index + 1}`),
-        name: String(row["설치장소명"] ?? row["장소"] ?? row["주소"] ?? row.name ?? ""),
-        installedYear: Number(year) || new Date().getFullYear(),
-        longitude,
-        latitude,
+  const rows = [];
+  const failures = [];
+
+  sourceRows.forEach((row, index) => {
+    const rowNumber = index + 2;
+    const managementNo = textFrom(pick(row, ["관리번호", "번호", "id"]));
+    const adminDongName = textFrom(pick(row, ["읍면동", "행정동", "__EMPTY"]));
+    const longitude = numberFrom(pick(row, ["경도", "longitude", "lng"]));
+    const latitude = numberFrom(pick(row, ["위도", "latitude", "lat"]));
+
+    const missing = [];
+    if (!managementNo) missing.push("관리번호");
+    if (!adminDongName) missing.push("읍면동");
+    if (!Number.isFinite(longitude)) missing.push("경도");
+    if (!Number.isFinite(latitude)) missing.push("위도");
+
+    if (missing.length) {
+      failures.push({
+        rowNumber,
+        managementNo,
+        reason: `필수값 누락 또는 오류: ${missing.join(", ")}`,
         raw: row
-      };
+      });
+      return;
+    }
+
+    rows.push({
+      rowNumber,
+      managementNo,
+      adminDongName,
+      name: textFrom(pick(row, ["설치장소명", "장소", "name"])),
+      roadAddress: textFrom(pick(row, ["도로명주소", "설치위치", "주소", "roadAddress"])),
+      lotAddress: textFrom(pick(row, ["지번주소", "lotAddress", "__EMPTY_1"])),
+      note: textFrom(pick(row, ["비고", "memo", "note"])),
+      installedYear: Number(year) || new Date().getFullYear(),
+      longitude,
+      latitude,
+      raw: row
+    });
+  });
+
+  return { rows, failures };
+}
+
+function readInstalledShadeWorkbook(filePath) {
+  const workbook = xlsx.readFile(filePath);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+  return rows
+    .map((row) => {
+      const normalized = { ...row };
+      if (!normalized["읍면동"] && row.__EMPTY) normalized["읍면동"] = row.__EMPTY;
+      if (!normalized["지번주소"] && row.__EMPTY_1) normalized["지번주소"] = row.__EMPTY_1;
+      return normalized;
     })
-    .filter((row) => Number.isFinite(row.longitude) && Number.isFinite(row.latitude));
+    .filter((row) => !isBlankRow(row) && !isInstalledShadeGuideRow(row));
+}
+
+function isBlankRow(row) {
+  return Object.values(row).every((value) => String(value ?? "").trim() === "");
+}
+
+function isInstalledShadeGuideRow(row) {
+  const managementNo = textFrom(row["관리번호"]);
+  const longitude = numberFrom(row["경도"]);
+  const latitude = numberFrom(row["위도"]);
+  const adminDongName = textFrom(row["읍면동"] ?? row.__EMPTY);
+  return !managementNo && !Number.isFinite(longitude) && !Number.isFinite(latitude) && Boolean(adminDongName);
+}
+
+function pick(row, keys) {
+  for (const key of keys) {
+    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") return row[key];
+  }
+  return "";
+}
+
+function textFrom(value) {
+  return String(value ?? "").trim();
 }
 
 function loadCrosswalks(filePath) {
@@ -103,7 +166,7 @@ function loadShelters(filePath) {
       latitude: numberFrom(row["위도"]),
       raw: row
     }))
-    .filter((row) => inSeodaemun(row));
+    .filter((row) => inSeodaemun(row) && isSeodaemunShelter(row));
 }
 
 function loadIntersections(filePath) {
@@ -294,5 +357,16 @@ function inSeodaemun(point) {
     point.longitude <= 126.98 &&
     point.latitude >= 37.54 &&
     point.latitude <= 37.61
+  );
+}
+
+function isSeodaemunShelter(row) {
+  const roadAddress = String(row.roadAddress || "");
+  const lotAddress = String(row.raw?.["지번주소"] || "");
+  const locationCode = String(row.raw?.["위치코드"] || "");
+  return (
+    roadAddress.includes("서대문구") ||
+    lotAddress.includes("서대문구") ||
+    locationCode.startsWith("11410")
   );
 }

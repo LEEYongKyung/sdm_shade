@@ -25,6 +25,18 @@ export async function getExistingShades() {
   return request("/api/existing-shades");
 }
 
+export async function getMapLayers() {
+  return request("/api/map-layers");
+}
+
+export async function getInstalledShadeUploadBatches() {
+  return request("/api/uploads/installed-shades/batches");
+}
+
+export async function rollbackInstalledShadeUploadBatch(batchId) {
+  return request(`/api/uploads/installed-shades/${batchId}/rollback`, { method: "POST" });
+}
+
 export async function uploadInstalledShades({ file, year }) {
   const form = new FormData();
   form.append("file", file);
@@ -39,8 +51,8 @@ export async function uploadInstalledShades({ file, year }) {
   return response.json();
 }
 
-async function request(url) {
-  const response = await fetch(url);
+async function request(url, options) {
+  const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(await response.text());
   }

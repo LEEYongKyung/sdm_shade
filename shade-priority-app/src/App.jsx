@@ -1,26 +1,37 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import {
   AlertTriangle,
   CheckCircle2,
-  Database,
   Download,
   FileUp,
   MapPinned,
-  RefreshCw,
-  Settings2
+  RefreshCw
 } from "lucide-react";
 import { CandidateMap } from "./components/CandidateMap.jsx";
-import { getCandidates, getExistingShades, getHealth, getRules, uploadInstalledShades } from "./lib/api.js";
+import {
+  getCandidates,
+  getHealth,
+  getInstalledShadeUploadBatches,
+  getMapLayers,
+  getRules,
+  rollbackInstalledShadeUploadBatch,
+  uploadInstalledShades
+} from "./lib/api.js";
 import { meters, number, statusClass, statusLabel } from "./lib/format.js";
 
 const modes = [
   { id: "selected", label: "선정 후보" },
   { id: "review", label: "현장 확인" },
   { id: "excluded", label: "제외 후보" },
-  { id: "all", label: "전체" },
-  { id: "existing", label: "기존 그늘막" }
+  { id: "all", label: "전체" }
 ];
+
+const defaultVisibleLayers = {
+  elderly: true,
+  existingShades: true,
+  coolingShelters: true
+};
 
 export default function App() {
   const [health, setHealth] = useState(null);
@@ -28,16 +39,29 @@ export default function App() {
   const [enabledRuleIds, setEnabledRuleIds] = useState([]);
   const [mode, setMode] = useState("selected");
   const [result, setResult] = useState(null);
-  const [existingShades, setExistingShades] = useState([]);
+  const [mapLayers, setMapLayers] = useState(null);
+  const [visibleLayers, setVisibleLayers] = useState(defaultVisibleLayers);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [highlightNodeId, setHighlightNodeId] = useState("");
+  const [nodeIdQuery, setNodeIdQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploadState, setUploadState] = useState({ year: new Date().getFullYear(), message: "" });
+  const [uploadBatches, setUploadBatches] = useState([]);
+  const [rollbackingBatchId, setRollbackingBatchId] = useState(null);
+  const rowRefs = useRef(new Map());
 
   useEffect(() => {
     async function bootstrap() {
-      const [healthPayload, rulesPayload] = await Promise.all([getHealth(), getRules()]);
+      const [healthPayload, rulesPayload, layerPayload, batchesPayload] = await Promise.all([
+        getHealth(),
+        getRules(),
+        getMapLayers(),
+        getInstalledShadeUploadBatches()
+      ]);
       setHealth(healthPayload);
       setRules(rulesPayload.rules);
+      setMapLayers(layerPayload);
+      setUploadBatches(batchesPayload.batches || []);
       setEnabledRuleIds(rulesPayload.rules.filter((rule) => rule.enabled).map((rule) => rule.id));
     }
     bootstrap().catch((error) => setUploadState((state) => ({ ...state, message: error.message })));
@@ -51,20 +75,8 @@ export default function App() {
   async function refreshCandidates() {
     setLoading(true);
     try {
-      if (mode === "existing") {
-        const payload = await getExistingShades();
-        setExistingShades(payload.shades);
-        setResult((current) => current || { summary: {}, candidates: [] });
-        setSelectedCandidate(null);
-        return;
-      }
-
-      const [payload, shadesPayload] = await Promise.all([
-        getCandidates({ enabledRuleIds, mode }),
-        mode === "all" ? getExistingShades() : Promise.resolve({ shades: [] })
-      ]);
+      const payload = await getCandidates({ enabledRuleIds, mode });
       setResult(payload);
-      setExistingShades(shadesPayload.shades);
       setSelectedCandidate(payload.candidates[0] || null);
     } finally {
       setLoading(false);
@@ -78,17 +90,59 @@ export default function App() {
     );
   }
 
+  function toggleMapLayer(layerId) {
+    setVisibleLayers((current) => ({ ...current, [layerId]: !current[layerId] }));
+  }
+
+  function selectCandidate(candidate, source = "table") {
+    setSelectedCandidate(candidate);
+    if (source === "map") {
+      const row = rowRefs.current.get(candidate.nodeId);
+      if (row) {
+        row.scrollIntoView({ block: "center", behavior: "smooth" });
+        setHighlightNodeId(candidate.nodeId);
+        window.setTimeout(() => setHighlightNodeId((current) => (current === candidate.nodeId ? "" : current)), 1400);
+      }
+    }
+  }
+
   async function handleUpload(event) {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploadState((state) => ({ ...state, message: "업로드 처리 중..." }));
     const payload = await uploadInstalledShades({ file, year: uploadState.year });
-    await refreshCandidates();
-    const duplicateText = payload.duplicateWarnings.length
-      ? `, 중복 의심 ${payload.duplicateWarnings.length}건`
-      : "";
-    setUploadState((state) => ({ ...state, message: `${payload.savedCount}건 저장${duplicateText}` }));
+    const [, , batchesPayload] = await Promise.all([
+      refreshCandidates(),
+      getMapLayers().then(setMapLayers),
+      getInstalledShadeUploadBatches()
+    ]);
+    setUploadBatches(batchesPayload.batches || []);
+    setUploadState((state) => ({
+      ...state,
+      message: `배치 #${payload.batchId || "-"}: 신규 ${payload.insertedCount || 0}건, 업데이트 ${payload.updatedCount || 0}건, 변경 없음 ${payload.skippedCount || 0}건, 실패 ${payload.failedCount || 0}건`
+    }));
     event.target.value = "";
+  }
+
+  async function handleRollbackUploadBatch(batchId) {
+    if (!batchId) return;
+    setRollbackingBatchId(batchId);
+    setUploadState((state) => ({ ...state, message: `배치 #${batchId} 롤백 처리 중...` }));
+    try {
+      const payload = await rollbackInstalledShadeUploadBatch(batchId);
+      const [, , batchesPayload] = await Promise.all([
+        refreshCandidates(),
+        getMapLayers().then(setMapLayers),
+        getInstalledShadeUploadBatches()
+      ]);
+      setUploadBatches(batchesPayload.batches || []);
+      setUploadState((state) => ({
+        ...state,
+        message: `배치 #${batchId} 롤백 완료: 신규 취소 ${payload.rolledBackInserted || 0}건, 업데이트 복원 ${payload.rolledBackUpdated || 0}건`
+      }));
+    } finally {
+      setRollbackingBatchId(null);
+    }
   }
 
   function exportXlsx() {
@@ -109,7 +163,7 @@ export default function App() {
       무더위쉼터거리m: Math.round(row.nearestCoolingShelterM || 0),
       교차로거리m: Math.round(row.nearestIntersectionM || 0),
       제외사유: row.exclusionReason,
-      현장확인사항: row.reviewFlags.join("; "),
+      현장확인사항: visibleReviewFlags(row).join("; "),
       경도: row.longitude,
       위도: row.latitude
     }));
@@ -117,6 +171,10 @@ export default function App() {
     const book = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(book, sheet, "후보지");
     XLSX.writeFile(book, `그늘막_후보지_${mode}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
+  function visibleReviewFlags(row) {
+    return (row?.reviewFlags || []).filter((flag) => !String(flag).includes("MEDIUM"));
   }
 
   function scoreOf(row, ruleId) {
@@ -139,6 +197,13 @@ export default function App() {
     ];
   }, [health, result]);
 
+  const tableCandidates = useMemo(() => {
+    const rows = result?.candidates || [];
+    const query = nodeIdQuery.trim().toLowerCase();
+    if (!query) return rows;
+    return rows.filter((row) => String(row.nodeId || "").toLowerCase().includes(query));
+  }, [nodeIdQuery, result]);
+
   return (
     <div className="app-shell">
       <aside className="nav-rail" aria-label="주요 메뉴">
@@ -146,19 +211,13 @@ export default function App() {
         <button className="nav-button is-active" title="후보지 지도">
           <MapPinned size={20} />
         </button>
-        <button className="nav-button" title="점수체계">
-          <Settings2 size={20} />
-        </button>
-        <button className="nav-button" title="데이터베이스">
-          <Database size={20} />
-        </button>
       </aside>
 
       <main className="workspace">
         <header className="topbar">
           <div>
             <h1>서대문구 그늘막 설치 위치 선정 시뮬레이션</h1>
-            <p>대로변 횡단보도를 기본 후보로 두고 인도폭, 교차로, 고령자, 쉼터, 기존 설치 위치를 재평가합니다.</p>
+            <p>대로변 횡단보도를 기본 후보로 두고 인도폭, 도로, 교차로, 고령자, 쉼터, 기존 설치 위치를 재평가합니다.</p>
           </div>
           <div className="topbar-actions">
             <span className={`db-badge ${health?.dbAvailable ? "ok" : "warn"}`}>
@@ -189,10 +248,12 @@ export default function App() {
               ))}
             </div>
             <CandidateMap
-              candidates={mode === "existing" ? [] : result?.candidates || []}
-              existingShades={mode === "existing" || mode === "all" ? existingShades : []}
+              candidates={result?.candidates || []}
+              mapLayers={mapLayers}
+              visibleLayers={visibleLayers}
               selectedCandidate={selectedCandidate}
-              onSelect={setSelectedCandidate}
+              onSelect={selectCandidate}
+              onToggleLayer={toggleMapLayer}
             />
           </div>
 
@@ -205,18 +266,44 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              <button className="secondary-button" onClick={exportXlsx} disabled={!result?.candidates?.length}>
-                <Download size={16} />
-                엑셀 다운로드
-              </button>
+              <div className="panel-tools">
+                <label className="node-search">
+                  <span>노드ID</span>
+                  <input
+                    type="search"
+                    value={nodeIdQuery}
+                    onChange={(event) => setNodeIdQuery(event.target.value)}
+                    placeholder="예: 84526"
+                    aria-label="노드ID 검색"
+                  />
+                </label>
+                <button className="secondary-button" onClick={exportXlsx} disabled={!result?.candidates?.length}>
+                  <Download size={16} />
+                  엑셀 다운로드
+                </button>
+              </div>
             </div>
 
             <div className="candidate-table-wrap">
               <table className="candidate-table">
+                <colgroup>
+                  <col className="col-rank" />
+                  <col className="col-node" />
+                  <col className="col-dong" />
+                  <col className="col-status" />
+                  <col className="col-score" />
+                  <col className="col-sidewalk" />
+                  <col className="col-road" />
+                  <col className="col-distance" />
+                  <col className="col-elderly" />
+                  <col className="col-distance" />
+                  <col className="col-distance" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>순위</th>
-                    <th>행정동</th>
+                    <th>노드ID</th>
+                    <th>법정동</th>
                     <th>상태</th>
                     <th>총점</th>
                     <th>인도폭</th>
@@ -228,27 +315,32 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mode === "existing" ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan="10" className="empty-cell">
-                        기존 그늘막 {existingShades.length.toLocaleString()}개가 지도에 검은색으로 표시됩니다.
-                      </td>
+                      <td colSpan="11" className="empty-cell">재계산 중...</td>
                     </tr>
-                  ) : loading ? (
+                  ) : tableCandidates.length === 0 ? (
                     <tr>
-                      <td colSpan="10" className="empty-cell">재계산 중...</td>
+                      <td colSpan="11" className="empty-cell">검색 결과가 없습니다.</td>
                     </tr>
                   ) : (
-                    (result?.candidates || []).map((row, index) => (
+                    tableCandidates.map((row, index) => (
                       <tr
                         key={row.nodeId}
-                        className={selectedCandidate?.nodeId === row.nodeId ? "is-current" : ""}
-                        onClick={() => setSelectedCandidate(row)}
+                        ref={(element) => {
+                          if (element) rowRefs.current.set(row.nodeId, element);
+                          else rowRefs.current.delete(row.nodeId);
+                        }}
+                        className={[
+                          selectedCandidate?.nodeId === row.nodeId ? "is-current" : "",
+                          highlightNodeId === row.nodeId ? "is-flashing" : ""
+                        ].filter(Boolean).join(" ")}
+                        onClick={() => selectCandidate(row, "table")}
                       >
                         <td>{row.rank || index + 1}</td>
+                        <td>{row.nodeId}</td>
                         <td>
                           <strong>{row.dongName || "-"}</strong>
-                          <span>{row.nodeId}</span>
                         </td>
                         <td>
                           <span className={`status-pill ${statusClass(row.status)}`}>{statusLabel(row.status)}</span>
@@ -286,13 +378,12 @@ export default function App() {
                 <div><dt>총점</dt><dd>{number(selectedCandidate.totalScore)}</dd></div>
                 <div><dt>도로</dt><dd>{roadLabel(selectedCandidate)}</dd></div>
                 <div><dt>인도폭</dt><dd>{selectedCandidate.sidewalkWidthM ? `${selectedCandidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
-                <div><dt>인도 매칭</dt><dd>{selectedCandidate.sidewalkMatchConfidence}</dd></div>
                 <div><dt>기존 그늘막</dt><dd>{meters(selectedCandidate.nearestExistingShadeM)}</dd></div>
               </dl>
-              {(selectedCandidate.exclusionReason || selectedCandidate.reviewFlags.length > 0) && (
+              {(selectedCandidate.exclusionReason || visibleReviewFlags(selectedCandidate).length > 0) && (
                 <div className="warning-box">
                   <AlertTriangle size={16} />
-                  <span>{selectedCandidate.exclusionReason || selectedCandidate.reviewFlags.join(", ")}</span>
+                  <span>{selectedCandidate.exclusionReason || visibleReviewFlags(selectedCandidate).join(", ")}</span>
                 </div>
               )}
             </div>
@@ -342,7 +433,32 @@ export default function App() {
               <input type="file" accept=".xlsx,.xls,.csv" onChange={handleUpload} />
             </label>
           </div>
-          <p>{uploadState.message || "엑셀/CSV 업로드 시 DB 또는 로컬 실행 상태에 반영합니다."}</p>
+          <p>{uploadState.message || "엑셀/CSV 업로드 시 DB 또는 로컬 실행 상태에 반영됩니다."}</p>
+          {uploadBatches.length > 0 && (
+            <div className="upload-batches">
+              <div className="upload-batches-title">최근 업로드 이력</div>
+              {uploadBatches.slice(0, 6).map((batch) => (
+                <div className="upload-batch-row" key={batch.id}>
+                  <div>
+                    <strong>#{batch.id} {batch.installedYear || "-"}</strong>
+                    <span>{new Date(batch.createdAt).toLocaleString("ko-KR")}</span>
+                    <small>
+                      신규 {batch.insertedCount}, 수정 {batch.updatedCount}, 동일 {batch.skippedCount}, 실패 {batch.failedCount}
+                    </small>
+                  </div>
+                  <button
+                    type="button"
+                    className="mini-danger-button"
+                    disabled={Boolean(batch.rolledBackAt) || rollbackingBatchId === batch.id}
+                    onClick={() => handleRollbackUploadBatch(batch.id)}
+                    title={batch.rolledBackAt ? "이미 롤백된 업로드입니다." : "이 업로드로 반영된 변경만 되돌립니다."}
+                  >
+                    {batch.rolledBackAt ? "롤백됨" : rollbackingBatchId === batch.id ? "처리 중" : "롤백"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </aside>
     </div>
