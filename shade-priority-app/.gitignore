@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 backups/
+db_backups/
 reports/
 logs/
 qa-screenshot*.png

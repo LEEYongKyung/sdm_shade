@@ -62,13 +62,7 @@ app.get("/api/candidates", async (req, res) => {
 app.get("/api/existing-shades", async (_req, res) => {
   const data = await withUploadedShades(loadLocalData());
   res.json({
-    shades: data.existingShades.map((shade) => ({
-      id: shade.managementNo || shade.name,
-      managementNo: shade.managementNo,
-      name: shade.name,
-      longitude: shade.longitude,
-      latitude: shade.latitude
-    }))
+    shades: data.existingShades.map(existingShadePayload)
   });
 });
 
@@ -79,13 +73,7 @@ app.get("/api/map-layers", async (_req, res) => {
   const elderlyDongs = await loadLegalDongLayer(elderlyByLegalDong);
 
   res.json({
-    existingShades: data.existingShades.map((shade) => ({
-      id: shade.managementNo || shade.name,
-      managementNo: shade.managementNo,
-      name: shade.name,
-      longitude: shade.longitude,
-      latitude: shade.latitude
-    })),
+    existingShades: data.existingShades.map(existingShadePayload),
     coolingShelters: data.shelters.map((shelter, index) => ({
       id: shelter.name || `shelter-${index + 1}`,
       name: shelter.name,
@@ -171,6 +159,33 @@ app.get("/api/uploads/installed-shades/batches", async (req, res) => {
   res.json({ batches: await recentUploadBatches(limit) });
 });
 
+app.get("/api/uploads/installed-shades/:batchId/locations", async (req, res) => {
+  if (!(await dbAvailable())) {
+    res.json({ batchId: Number(req.params.batchId), shades: [] });
+    return;
+  }
+  try {
+    const batchId = Number(req.params.batchId);
+    const batch = await query(
+      `SELECT id, rolled_back_at
+       FROM installed_shade_upload_batches
+       WHERE id = $1`,
+      [batchId]
+    );
+    if (!batch.rows[0]) {
+      res.status(404).json({ error: "upload batch not found" });
+      return;
+    }
+    if (batch.rows[0].rolled_back_at) {
+      res.json({ batchId, shades: [], rolledBack: true });
+      return;
+    }
+    res.json({ batchId, shades: await uploadBatchLocations(batchId), rolledBack: false });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.post("/api/uploads/installed-shades/:batchId/rollback", async (req, res) => {
   if (!(await dbAvailable())) {
     res.status(409).json({ error: "PostgreSQL 연결 상태에서만 롤백할 수 있습니다." });
@@ -225,10 +240,43 @@ function rowsForMode(result, mode) {
   return result.selected;
 }
 
+function existingShadePayload(shade, index = 0) {
+  return {
+    id: shade.managementNo || shade.name || `existing-${index + 1}`,
+    managementNo: shade.managementNo || "",
+    dongName: firstText(shade.adminDongName, shade.raw?.["읍면동"], shade.raw?.["행정동"], dongNameFromManagementNo(shade.managementNo)),
+    name: firstText(shade.name),
+    roadAddress: firstText(shade.roadAddress, shade.raw?.["도로명주소"], shade.raw?.["설치위치"], shade.raw?.["주소"]),
+    lotAddress: firstText(shade.lotAddress, shade.raw?.["지번주소"], shade.raw?.["__EMPTY_1"]),
+    longitude: shade.longitude,
+    latitude: shade.latitude
+  };
+}
+
+function firstText(...values) {
+  for (const value of values) {
+    const text = String(value ?? "").trim();
+    if (text) return text;
+  }
+  return "";
+}
+
+function dongNameFromManagementNo(managementNo) {
+  return String(managementNo || "").split("-")[0] || "";
+}
+
 async function withUploadedShades(data) {
   const dbUploadedShades = await loadUploadedShadeFacilities();
+  const localByManagementNo = new Map(
+    data.existingShades
+      .filter((shade) => shade.managementNo)
+      .map((shade) => [shade.managementNo, shade])
+  );
+  const mergedUploadedShades = [...uploadedShades, ...dbUploadedShades].map((shade) =>
+    mergeUploadedShadeWithLocalFallback(shade, localByManagementNo.get(shade.managementNo))
+  );
   const uploadedManagementNos = new Set(
-    [...uploadedShades, ...dbUploadedShades]
+    mergedUploadedShades
       .map((shade) => shade.managementNo)
       .filter(Boolean)
   );
@@ -237,7 +285,22 @@ async function withUploadedShades(data) {
   );
   return {
     ...data,
-    existingShades: [...localExistingShades, ...uploadedShades, ...dbUploadedShades]
+    existingShades: [...localExistingShades, ...mergedUploadedShades]
+  };
+}
+
+function mergeUploadedShadeWithLocalFallback(uploaded, local) {
+  if (!local) return uploaded;
+  return {
+    ...uploaded,
+    adminDongName: uploaded.adminDongName || local.adminDongName || "",
+    name: uploaded.name || local.name || "",
+    roadAddress: uploaded.roadAddress || local.roadAddress || "",
+    lotAddress: uploaded.lotAddress || local.lotAddress || "",
+    raw: {
+      ...(local.raw || {}),
+      ...(uploaded.raw || {})
+    }
   };
 }
 
@@ -502,6 +565,41 @@ async function recentUploadBatches(limit) {
     rolledBackAt: row.rolled_back_at,
     rolledBackBy: row.rolled_back_by
   }));
+}
+
+async function uploadBatchLocations(batchId) {
+  const result = await query(
+    `SELECT DISTINCT ON (management_no)
+            management_no,
+            action,
+            after_data
+     FROM installed_shade_upload_changes
+     WHERE batch_id = $1
+       AND action IN ('inserted', 'updated')
+       AND after_data IS NOT NULL
+     ORDER BY management_no, id DESC`,
+    [batchId]
+  );
+
+  return result.rows
+    .map((row) => {
+      const data = row.after_data || {};
+      const longitude = Number(data.longitude);
+      const latitude = Number(data.latitude);
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return null;
+      return {
+        managementNo: data.managementNo || row.management_no,
+        adminDongName: data.adminDongName,
+        name: data.name,
+        roadAddress: data.roadAddress,
+        lotAddress: data.lotAddress,
+        installedYear: data.installedYear,
+        longitude,
+        latitude,
+        action: row.action
+      };
+    })
+    .filter(Boolean);
 }
 
 async function rollbackInstalledShadeBatch(batchId, actor) {

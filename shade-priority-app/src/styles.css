@@ -404,7 +404,7 @@ button {
 }
 
 .tabs button {
-  min-width: 84px;
+  min-width: 78px;
   height: 32px;
   border: 0;
   border-radius: 6px;
@@ -525,6 +525,28 @@ button {
   width: 82px;
 }
 
+.candidate-table .col-place {
+  width: 160px;
+}
+
+.candidate-table .col-address {
+  width: 280px;
+}
+
+.candidate-table .col-coordinate {
+  width: 116px;
+}
+
+.existing-shade-table {
+  min-width: 1080px;
+}
+
+.existing-shade-table td:nth-child(5) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
 .candidate-table th {
   position: sticky;
   top: 0;
@@ -593,7 +615,7 @@ button {
 
 .score-sidebar {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(360px, 1fr) minmax(190px, 260px);
   gap: 14px;
   min-height: 0;
   padding: 18px 18px 18px 0;
@@ -662,6 +684,19 @@ button {
   font-weight: 800;
 }
 
+.candidate-detail .detail-address-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: start;
+}
+
+.candidate-detail .detail-address-row dd {
+  text-align: right;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -701,6 +736,27 @@ button {
 .status-pill.is-shelter {
   color: #0f766e;
   background: #ccfbf1;
+}
+
+.status-pill.is-uploaded {
+  color: #6d28d9;
+  background: #ede9fe;
+}
+
+.upload-highlight-ring {
+  animation: upload-ring-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes upload-ring-pulse {
+  0%,
+  100% {
+    stroke-width: 3;
+    stroke-opacity: 0.95;
+  }
+  50% {
+    stroke-width: 5;
+    stroke-opacity: 0.55;
+  }
 }
 
 .warning-box {
@@ -776,6 +832,8 @@ button {
 }
 
 .upload-panel {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   padding-bottom: 12px;
 }
 
@@ -819,7 +877,10 @@ button {
 
 .upload-batches {
   display: grid;
+  align-content: start;
   gap: 8px;
+  min-height: 0;
+  overflow: auto;
   margin: 12px;
   padding-top: 10px;
   border-top: 1px solid var(--line);
@@ -833,13 +894,18 @@ button {
 
 .upload-batch-row {
   display: grid;
-  grid-template-columns: 1fr 64px;
+  grid-template-columns: 1fr 52px 64px;
   align-items: center;
   gap: 8px;
   padding: 8px;
   background: #f8fafc;
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+
+.upload-batch-row.is-focused {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
 }
 
 .upload-batch-row div {
@@ -862,18 +928,28 @@ button {
   font-size: 11px;
 }
 
+.mini-action-button,
 .mini-danger-button {
   min-height: 30px;
   padding: 0 8px;
-  color: #991b1b;
   font-size: 12px;
   font-weight: 800;
   background: #fff;
-  border: 1px solid #fecaca;
   border-radius: 7px;
   cursor: pointer;
 }
 
+.mini-action-button {
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.mini-danger-button {
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.mini-action-button:disabled,
 .mini-danger-button:disabled {
   color: var(--muted);
   background: #f1f5f9;

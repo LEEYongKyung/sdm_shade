@@ -33,6 +33,10 @@ export async function getInstalledShadeUploadBatches() {
   return request("/api/uploads/installed-shades/batches");
 }
 
+export async function getInstalledShadeUploadBatchLocations(batchId) {
+  return request(`/api/uploads/installed-shades/${batchId}/locations`);
+}
+
 export async function rollbackInstalledShadeUploadBatch(batchId) {
   return request(`/api/uploads/installed-shades/${batchId}/rollback`, { method: "POST" });
 }

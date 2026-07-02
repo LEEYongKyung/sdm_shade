@@ -86,6 +86,7 @@ function evaluateCandidate(crosswalk, data, enabled) {
     sourceDongName: crosswalk.dongName,
     roadName: roadMatch?.roadName || context?.roadName || "",
     roadAddress: context?.roadAddress || "",
+    parcelAddress: context?.parcelAddress || "",
     roadClassCode: roadMatch?.roadClassCode || "",
     roadWidthM: roadMatch?.roadWidthM ?? null,
     roadEffectiveWidthM: roadMatch?.effectiveWidthM ?? null,

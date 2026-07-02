@@ -31,7 +31,7 @@ export function loadLocalData() {
   const roads = loadRoadRoutes(findFile(sourceDir, "도로노선"));
   const elderly = loadElderly(findFile(sourceDir, "고령자"));
   const existingShades = loadExistingShades(
-    path.resolve(oldAppDataDir, "shade_existing.csv")
+    findFile(sourceDir, "그늘막 주소") || path.resolve(oldAppDataDir, "shade_existing.csv")
   );
   const sidewalks = loadSidewalks(findProjectFile("25.12", ".xlsx"));
   const legacyTop100 = loadLegacyTop100(
@@ -220,10 +220,17 @@ function loadElderly(filePath) {
 }
 
 function loadExistingShades(filePath) {
-  return readCsv(filePath)
+  const rows = path.extname(filePath || "").toLowerCase() === ".xlsx"
+    ? readInstalledShadeWorkbook(filePath)
+    : readCsv(filePath);
+
+  return rows
     .map((row) => ({
-      managementNo: row["관리번호"],
-      name: row["설치장소명"],
+      managementNo: textFrom(row["관리번호"]),
+      adminDongName: textFrom(row["읍면동"] || row["행정동"] || row.__EMPTY),
+      name: textFrom(row["설치장소명"]),
+      roadAddress: textFrom(row["도로명주소"] || row["설치위치"] || row["주소"]),
+      lotAddress: textFrom(row["지번주소"] || row.__EMPTY_1),
       longitude: numberFrom(row["경도"]),
       latitude: numberFrom(row["위도"]),
       raw: row

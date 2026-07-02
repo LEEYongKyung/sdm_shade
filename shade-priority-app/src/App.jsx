@@ -11,8 +11,10 @@ import {
 import { CandidateMap } from "./components/CandidateMap.jsx";
 import {
   getCandidates,
+  getExistingShades,
   getHealth,
   getInstalledShadeUploadBatches,
+  getInstalledShadeUploadBatchLocations,
   getMapLayers,
   getRules,
   rollbackInstalledShadeUploadBatch,
@@ -27,6 +29,8 @@ const modes = [
   { id: "all", label: "전체" }
 ];
 
+const tableModes = [...modes, { id: "existing", label: "기존 그늘막" }];
+
 const defaultVisibleLayers = {
   elderly: true,
   existingShades: true,
@@ -38,30 +42,36 @@ export default function App() {
   const [rules, setRules] = useState([]);
   const [enabledRuleIds, setEnabledRuleIds] = useState([]);
   const [mode, setMode] = useState("selected");
+  const [tableMode, setTableMode] = useState("selected");
   const [result, setResult] = useState(null);
   const [mapLayers, setMapLayers] = useState(null);
+  const [existingShades, setExistingShades] = useState([]);
   const [visibleLayers, setVisibleLayers] = useState(defaultVisibleLayers);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [selectedExistingShade, setSelectedExistingShade] = useState(null);
   const [highlightNodeId, setHighlightNodeId] = useState("");
   const [nodeIdQuery, setNodeIdQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploadState, setUploadState] = useState({ year: new Date().getFullYear(), message: "" });
   const [uploadBatches, setUploadBatches] = useState([]);
+  const [focusedUploadBatch, setFocusedUploadBatch] = useState(null);
   const [rollbackingBatchId, setRollbackingBatchId] = useState(null);
   const rowRefs = useRef(new Map());
 
   useEffect(() => {
     async function bootstrap() {
-      const [healthPayload, rulesPayload, layerPayload, batchesPayload] = await Promise.all([
+      const [healthPayload, rulesPayload, layerPayload, batchesPayload, existingPayload] = await Promise.all([
         getHealth(),
         getRules(),
         getMapLayers(),
-        getInstalledShadeUploadBatches()
+        getInstalledShadeUploadBatches(),
+        getExistingShades()
       ]);
       setHealth(healthPayload);
       setRules(rulesPayload.rules);
       setMapLayers(layerPayload);
       setUploadBatches(batchesPayload.batches || []);
+      setExistingShades(existingPayload.shades || []);
       setEnabledRuleIds(rulesPayload.rules.filter((rule) => rule.enabled).map((rule) => rule.id));
     }
     bootstrap().catch((error) => setUploadState((state) => ({ ...state, message: error.message })));
@@ -94,8 +104,32 @@ export default function App() {
     setVisibleLayers((current) => ({ ...current, [layerId]: !current[layerId] }));
   }
 
+  function selectTableMode(nextMode) {
+    setTableMode(nextMode);
+    setNodeIdQuery("");
+    if (nextMode !== "existing") {
+      setMode(nextMode);
+    }
+  }
+
+  async function showUploadBatchOnMap(batchId) {
+    if (!batchId) return;
+    const payload = await getInstalledShadeUploadBatchLocations(batchId);
+    setVisibleLayers((current) => ({ ...current, existingShades: true }));
+    setFocusedUploadBatch({
+      id: batchId,
+      shades: payload.shades || [],
+      rolledBack: Boolean(payload.rolledBack)
+    });
+    setUploadState((state) => ({
+      ...state,
+      message: `배치 #${batchId} 위치 ${payload.shades?.length || 0}건을 지도에 표시했습니다.`
+    }));
+  }
+
   function selectCandidate(candidate, source = "table") {
     setSelectedCandidate(candidate);
+    setSelectedExistingShade(null);
     if (source === "map") {
       const row = rowRefs.current.get(candidate.nodeId);
       if (row) {
@@ -106,20 +140,31 @@ export default function App() {
     }
   }
 
+  function selectExistingShade(shade) {
+    setSelectedExistingShade(shade);
+    setSelectedCandidate(null);
+    setVisibleLayers((current) => ({ ...current, existingShades: true }));
+  }
+
   async function handleUpload(event) {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploadState((state) => ({ ...state, message: "업로드 처리 중..." }));
     const payload = await uploadInstalledShades({ file, year: uploadState.year });
-    const [, , batchesPayload] = await Promise.all([
+    const [, , batchesPayload, existingPayload] = await Promise.all([
       refreshCandidates(),
       getMapLayers().then(setMapLayers),
-      getInstalledShadeUploadBatches()
+      getInstalledShadeUploadBatches(),
+      getExistingShades()
     ]);
     setUploadBatches(batchesPayload.batches || []);
+    setExistingShades(existingPayload.shades || []);
+    if (payload.batchId) {
+      await showUploadBatchOnMap(payload.batchId);
+    }
     setUploadState((state) => ({
       ...state,
-      message: `배치 #${payload.batchId || "-"}: 신규 ${payload.insertedCount || 0}건, 업데이트 ${payload.updatedCount || 0}건, 변경 없음 ${payload.skippedCount || 0}건, 실패 ${payload.failedCount || 0}건`
+      message: `배치 #${payload.batchId || "-"}: 신규 ${payload.insertedCount || 0}건, 업데이트 ${payload.updatedCount || 0}건, 변경 없음 ${payload.skippedCount || 0}건, 실패 ${payload.failedCount || 0}건${payload.batchId ? " - 지도에 표시했습니다." : ""}`
     }));
     event.target.value = "";
   }
@@ -130,12 +175,15 @@ export default function App() {
     setUploadState((state) => ({ ...state, message: `배치 #${batchId} 롤백 처리 중...` }));
     try {
       const payload = await rollbackInstalledShadeUploadBatch(batchId);
-      const [, , batchesPayload] = await Promise.all([
+      const [, , batchesPayload, existingPayload] = await Promise.all([
         refreshCandidates(),
         getMapLayers().then(setMapLayers),
-        getInstalledShadeUploadBatches()
+        getInstalledShadeUploadBatches(),
+        getExistingShades()
       ]);
       setUploadBatches(batchesPayload.batches || []);
+      setExistingShades(existingPayload.shades || []);
+      setFocusedUploadBatch((current) => (current?.id === batchId ? null : current));
       setUploadState((state) => ({
         ...state,
         message: `배치 #${batchId} 롤백 완료: 신규 취소 ${payload.rolledBackInserted || 0}건, 업데이트 복원 ${payload.rolledBackUpdated || 0}건`
@@ -146,12 +194,19 @@ export default function App() {
   }
 
   function exportXlsx() {
+    if (tableMode === "existing") {
+      exportExistingShadesXlsx();
+      return;
+    }
     const rows = (result?.candidates || []).map((row, index) => ({
       순위: row.rank || index + 1,
       행정동: row.dongName,
       노드ID: row.nodeId,
       상태: statusLabel(row.status),
       총점: row.totalScore,
+      주소: candidateAddress(row),
+      도로명주소: row.roadAddress || "",
+      지번주소: row.parcelAddress || "",
       도로명: row.roadName || "",
       도로폭: row.roadEffectiveWidthM ?? row.roadWidthM ?? "",
       인도폭: row.sidewalkWidthM ?? "",
@@ -173,6 +228,22 @@ export default function App() {
     XLSX.writeFile(book, `그늘막_후보지_${mode}_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
+  function exportExistingShadesXlsx() {
+    const rows = filteredExistingShades.map((row, index) => ({
+      연번: index + 1,
+      법정동: row.dongName || "",
+      관리번호: row.managementNo || "",
+      설치장소명: row.name || "",
+      주소: existingShadeAddress(row),
+      경도: row.longitude,
+      위도: row.latitude
+    }));
+    const sheet = XLSX.utils.json_to_sheet(rows);
+    const book = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, sheet, "기존그늘막");
+    XLSX.writeFile(book, `기존_그늘막_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
   function visibleReviewFlags(row) {
     return (row?.reviewFlags || []).filter((flag) => !String(flag).includes("MEDIUM"));
   }
@@ -185,6 +256,22 @@ export default function App() {
     const width = row.roadEffectiveWidthM ?? row.roadWidthM;
     const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
     return `${row.roadName || "-"} / ${widthText} (+${scoreOf(row, "major_road")})`;
+  }
+
+  function candidateAddress(row) {
+    return firstText(row?.roadAddress, row?.parcelAddress) || "-";
+  }
+
+  function existingShadeAddress(row) {
+    return firstText(row?.roadAddress, row?.lotAddress) || "-";
+  }
+
+  function firstText(...values) {
+    for (const value of values) {
+      const text = String(value ?? "").trim();
+      if (text) return text;
+    }
+    return "";
   }
 
   const summaryCards = useMemo(() => {
@@ -201,8 +288,17 @@ export default function App() {
     const rows = result?.candidates || [];
     const query = nodeIdQuery.trim().toLowerCase();
     if (!query) return rows;
-    return rows.filter((row) => String(row.nodeId || "").toLowerCase().includes(query));
+    return rows.filter((row) =>
+      String(row.nodeId || "").toLowerCase().includes(query) ||
+      String(row.dongName || "").toLowerCase().includes(query)
+    );
   }, [nodeIdQuery, result]);
+
+  const filteredExistingShades = useMemo(() => {
+    const query = nodeIdQuery.trim().toLowerCase();
+    if (!query) return existingShades;
+    return existingShades.filter((row) => String(row.managementNo || "").toLowerCase().includes(query));
+  }, [existingShades, nodeIdQuery]);
 
   return (
     <div className="app-shell">
@@ -242,7 +338,7 @@ export default function App() {
           <div className="map-panel">
             <div className="map-mode-tabs" role="tablist" aria-label="지도 후보 상태 필터">
               {modes.map((item) => (
-                <button key={item.id} className={mode === item.id ? "is-active" : ""} onClick={() => setMode(item.id)}>
+                <button key={item.id} className={mode === item.id ? "is-active" : ""} onClick={() => selectTableMode(item.id)}>
                   {item.label}
                 </button>
               ))}
@@ -251,8 +347,11 @@ export default function App() {
               candidates={result?.candidates || []}
               mapLayers={mapLayers}
               visibleLayers={visibleLayers}
+              focusedUploadBatch={focusedUploadBatch}
               selectedCandidate={selectedCandidate}
+              selectedExistingShade={selectedExistingShade}
               onSelect={selectCandidate}
+              onSelectExistingShade={selectExistingShade}
               onToggleLayer={toggleMapLayer}
             />
           </div>
@@ -260,24 +359,28 @@ export default function App() {
           <section className="table-panel">
             <div className="panel-header">
               <div className="tabs" role="tablist">
-                {modes.map((item) => (
-                  <button key={item.id} className={mode === item.id ? "is-active" : ""} onClick={() => setMode(item.id)}>
+                {tableModes.map((item) => (
+                  <button key={item.id} className={tableMode === item.id ? "is-active" : ""} onClick={() => selectTableMode(item.id)}>
                     {item.label}
                   </button>
                 ))}
               </div>
               <div className="panel-tools">
                 <label className="node-search">
-                  <span>노드ID</span>
+                  <span>{tableMode === "existing" ? "관리번호" : "노드ID/법정동"}</span>
                   <input
                     type="search"
                     value={nodeIdQuery}
                     onChange={(event) => setNodeIdQuery(event.target.value)}
-                    placeholder="예: 84526"
-                    aria-label="노드ID 검색"
+                    placeholder={tableMode === "existing" ? "예: 천연동-1" : "예: 84526, 홍은동"}
+                    aria-label={tableMode === "existing" ? "관리번호 검색" : "노드ID 또는 법정동 검색"}
                   />
                 </label>
-                <button className="secondary-button" onClick={exportXlsx} disabled={!result?.candidates?.length}>
+                <button
+                  className="secondary-button"
+                  onClick={exportXlsx}
+                  disabled={tableMode === "existing" ? !filteredExistingShades.length : !result?.candidates?.length}
+                >
                   <Download size={16} />
                   엑셀 다운로드
                 </button>
@@ -285,78 +388,128 @@ export default function App() {
             </div>
 
             <div className="candidate-table-wrap">
-              <table className="candidate-table">
-                <colgroup>
-                  <col className="col-rank" />
-                  <col className="col-node" />
-                  <col className="col-dong" />
-                  <col className="col-status" />
-                  <col className="col-score" />
-                  <col className="col-sidewalk" />
-                  <col className="col-road" />
-                  <col className="col-distance" />
-                  <col className="col-elderly" />
-                  <col className="col-distance" />
-                  <col className="col-distance" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>순위</th>
-                    <th>노드ID</th>
-                    <th>법정동</th>
-                    <th>상태</th>
-                    <th>총점</th>
-                    <th>인도폭</th>
-                    <th>도로/간선</th>
-                    <th>교차로</th>
-                    <th>고령자</th>
-                    <th>쉼터</th>
-                    <th>기존</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
+              {tableMode === "existing" ? (
+                <table className="candidate-table existing-shade-table">
+                  <colgroup>
+                    <col className="col-rank" />
+                    <col className="col-dong" />
+                    <col className="col-node" />
+                    <col className="col-place" />
+                    <col className="col-address" />
+                    <col className="col-coordinate" />
+                    <col className="col-coordinate" />
+                  </colgroup>
+                  <thead>
                     <tr>
-                      <td colSpan="11" className="empty-cell">재계산 중...</td>
+                      <th>연번</th>
+                      <th>법정동</th>
+                      <th>관리번호</th>
+                      <th>설치장소명</th>
+                      <th>주소</th>
+                      <th>경도</th>
+                      <th>위도</th>
                     </tr>
-                  ) : tableCandidates.length === 0 ? (
-                    <tr>
-                      <td colSpan="11" className="empty-cell">검색 결과가 없습니다.</td>
-                    </tr>
-                  ) : (
-                    tableCandidates.map((row, index) => (
-                      <tr
-                        key={row.nodeId}
-                        ref={(element) => {
-                          if (element) rowRefs.current.set(row.nodeId, element);
-                          else rowRefs.current.delete(row.nodeId);
-                        }}
-                        className={[
-                          selectedCandidate?.nodeId === row.nodeId ? "is-current" : "",
-                          highlightNodeId === row.nodeId ? "is-flashing" : ""
-                        ].filter(Boolean).join(" ")}
-                        onClick={() => selectCandidate(row, "table")}
-                      >
-                        <td>{row.rank || index + 1}</td>
-                        <td>{row.nodeId}</td>
-                        <td>
-                          <strong>{row.dongName || "-"}</strong>
-                        </td>
-                        <td>
-                          <span className={`status-pill ${statusClass(row.status)}`}>{statusLabel(row.status)}</span>
-                        </td>
-                        <td>{number(row.totalScore)}</td>
-                        <td>{row.sidewalkWidthM ? `${row.sidewalkWidthM}m` : "-"}</td>
-                        <td>{roadLabel(row)}</td>
-                        <td>{`${meters(row.nearestIntersectionM)} (+${scoreOf(row, "intersection")})`}</td>
-                        <td>{`+${scoreOf(row, "elderly_density")}`}</td>
-                        <td>{`${meters(row.nearestCoolingShelterM)} (+${scoreOf(row, "cooling_shelter_gap")})`}</td>
-                        <td>{meters(row.nearestExistingShadeM)}</td>
+                  </thead>
+                  <tbody>
+                    {filteredExistingShades.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="empty-cell">검색 결과가 없습니다.</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filteredExistingShades.map((row, index) => (
+                        <tr
+                          key={row.id || row.managementNo || `${row.longitude}-${row.latitude}-${index}`}
+                          className={selectedExistingShade?.managementNo === row.managementNo ? "is-current" : ""}
+                          onClick={() => selectExistingShade(row)}
+                        >
+                          <td>{index + 1}</td>
+                          <td>
+                            <strong>{row.dongName || "-"}</strong>
+                          </td>
+                          <td>{row.managementNo || "-"}</td>
+                          <td>{row.name || "-"}</td>
+                          <td>{existingShadeAddress(row)}</td>
+                          <td>{row.longitude ?? "-"}</td>
+                          <td>{row.latitude ?? "-"}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              ) : (
+                <table className="candidate-table">
+                  <colgroup>
+                    <col className="col-rank" />
+                    <col className="col-node" />
+                    <col className="col-dong" />
+                    <col className="col-status" />
+                    <col className="col-score" />
+                    <col className="col-sidewalk" />
+                    <col className="col-road" />
+                    <col className="col-distance" />
+                    <col className="col-elderly" />
+                    <col className="col-distance" />
+                    <col className="col-distance" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>순위</th>
+                      <th>노드ID</th>
+                      <th>법정동</th>
+                      <th>상태</th>
+                      <th>총점</th>
+                      <th>인도폭</th>
+                      <th>도로/간선</th>
+                      <th>교차로</th>
+                      <th>고령자</th>
+                      <th>쉼터</th>
+                      <th>기존</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="11" className="empty-cell">재계산 중...</td>
+                      </tr>
+                    ) : tableCandidates.length === 0 ? (
+                      <tr>
+                        <td colSpan="11" className="empty-cell">검색 결과가 없습니다.</td>
+                      </tr>
+                    ) : (
+                      tableCandidates.map((row, index) => (
+                        <tr
+                          key={row.nodeId}
+                          ref={(element) => {
+                            if (element) rowRefs.current.set(row.nodeId, element);
+                            else rowRefs.current.delete(row.nodeId);
+                          }}
+                          className={[
+                            selectedCandidate?.nodeId === row.nodeId ? "is-current" : "",
+                            highlightNodeId === row.nodeId ? "is-flashing" : ""
+                          ].filter(Boolean).join(" ")}
+                          onClick={() => selectCandidate(row, "table")}
+                        >
+                          <td>{row.rank || index + 1}</td>
+                          <td>{row.nodeId}</td>
+                          <td>
+                            <strong>{row.dongName || "-"}</strong>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${statusClass(row.status)}`}>{statusLabel(row.status)}</span>
+                          </td>
+                          <td>{number(row.totalScore)}</td>
+                          <td>{row.sidewalkWidthM ? `${row.sidewalkWidthM}m` : "-"}</td>
+                          <td>{roadLabel(row)}</td>
+                          <td>{`${meters(row.nearestIntersectionM)} (+${scoreOf(row, "intersection")})`}</td>
+                          <td>{`+${scoreOf(row, "elderly_density")}`}</td>
+                          <td>{`${meters(row.nearestCoolingShelterM)} (+${scoreOf(row, "cooling_shelter_gap")})`}</td>
+                          <td>{meters(row.nearestExistingShadeM)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
         </section>
@@ -375,6 +528,7 @@ export default function App() {
                 {statusLabel(selectedCandidate.status)}
               </span>
               <dl>
+                <div className="detail-address-row"><dt>주소</dt><dd>{candidateAddress(selectedCandidate)}</dd></div>
                 <div><dt>총점</dt><dd>{number(selectedCandidate.totalScore)}</dd></div>
                 <div><dt>도로</dt><dd>{roadLabel(selectedCandidate)}</dd></div>
                 <div><dt>인도폭</dt><dd>{selectedCandidate.sidewalkWidthM ? `${selectedCandidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
@@ -438,7 +592,10 @@ export default function App() {
             <div className="upload-batches">
               <div className="upload-batches-title">최근 업로드 이력</div>
               {uploadBatches.slice(0, 6).map((batch) => (
-                <div className="upload-batch-row" key={batch.id}>
+                <div
+                  className={`upload-batch-row ${focusedUploadBatch?.id === batch.id ? "is-focused" : ""}`}
+                  key={batch.id}
+                >
                   <div>
                     <strong>#{batch.id} {batch.installedYear || "-"}</strong>
                     <span>{new Date(batch.createdAt).toLocaleString("ko-KR")}</span>
@@ -446,6 +603,15 @@ export default function App() {
                       신규 {batch.insertedCount}, 수정 {batch.updatedCount}, 동일 {batch.skippedCount}, 실패 {batch.failedCount}
                     </small>
                   </div>
+                  <button
+                    type="button"
+                    className="mini-action-button"
+                    disabled={Boolean(batch.rolledBackAt)}
+                    onClick={() => showUploadBatchOnMap(batch.id)}
+                    title={batch.rolledBackAt ? "롤백된 업로드는 지도에 표시하지 않습니다." : "이 업로드 위치를 지도에서 강조 표시합니다."}
+                  >
+                    지도
+                  </button>
                   <button
                     type="button"
                     className="mini-danger-button"

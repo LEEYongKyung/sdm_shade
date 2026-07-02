@@ -15,11 +15,15 @@ export function CandidateMap({
   candidates,
   mapLayers,
   visibleLayers,
+  focusedUploadBatch,
   selectedCandidate,
+  selectedExistingShade,
   onSelect,
+  onSelectExistingShade,
   onToggleLayer
 }) {
   const markerRefs = useRef(new Map());
+  const existingMarkerRefs = useRef(new Map());
   const clusterGroupRef = useRef(null);
 
   return (
@@ -43,10 +47,14 @@ export function CandidateMap({
           mapLayers={mapLayers}
           visibleLayers={visibleLayers}
           selectedCandidate={selectedCandidate}
+          selectedExistingShade={selectedExistingShade}
           markerRefs={markerRefs}
+          existingMarkerRefs={existingMarkerRefs}
           clusterGroupRef={clusterGroupRef}
           onSelect={onSelect}
+          onSelectExistingShade={onSelectExistingShade}
         />
+        <UploadBatchHighlight batch={focusedUploadBatch} />
       </MapContainer>
       <MapLayerControl visibleLayers={visibleLayers} onToggleLayer={onToggleLayer} />
       {visibleLayers.elderly && <ElderlyLegend legend={mapLayers?.elderlyLegend || []} />}
@@ -62,15 +70,19 @@ function ClusteredMarkers({
   mapLayers,
   visibleLayers,
   selectedCandidate,
+  selectedExistingShade,
   markerRefs,
+  existingMarkerRefs,
   clusterGroupRef,
-  onSelect
+  onSelect,
+  onSelectExistingShade
 }) {
   const map = useMap();
   const icons = useMemo(() => createMarkerIcons(), []);
 
   useEffect(() => {
     markerRefs.current.clear();
+    existingMarkerRefs.current.clear();
 
     const group = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -104,6 +116,8 @@ function ClusteredMarkers({
         });
 
         marker.bindPopup(existingShadePopupHtml(shade));
+        marker.on("click", () => onSelectExistingShade?.(shade));
+        existingMarkerRefs.current.set(existingShadeKey(shade), marker);
         group.addLayer(marker);
       });
     }
@@ -127,10 +141,11 @@ function ClusteredMarkers({
 
     return () => {
       markerRefs.current.clear();
+      existingMarkerRefs.current.clear();
       clusterGroupRef.current = null;
       map.removeLayer(group);
     };
-  }, [candidates, icons, map, mapLayers, markerRefs, clusterGroupRef, onSelect, visibleLayers]);
+  }, [candidates, existingMarkerRefs, icons, map, mapLayers, markerRefs, clusterGroupRef, onSelect, onSelectExistingShade, visibleLayers]);
 
   useEffect(() => {
     if (!selectedCandidate || !clusterGroupRef.current) return;
@@ -140,6 +155,15 @@ function ClusteredMarkers({
 
     clusterGroupRef.current.zoomToShowLayer(marker, () => marker.openPopup());
   }, [clusterGroupRef, markerRefs, selectedCandidate]);
+
+  useEffect(() => {
+    if (!selectedExistingShade || !clusterGroupRef.current) return;
+
+    const marker = existingMarkerRefs.current.get(existingShadeKey(selectedExistingShade));
+    if (!marker) return;
+
+    clusterGroupRef.current.zoomToShowLayer(marker, () => marker.openPopup());
+  }, [clusterGroupRef, existingMarkerRefs, selectedExistingShade]);
 
   return null;
 }
@@ -159,7 +183,7 @@ function markerIcon({ url, className }) {
     iconUrl: url,
     className: `map-image-icon ${className}`,
     iconSize: [20, 20],
-    iconAnchor: [14, 14],
+    iconAnchor: [10, 10],
     popupAnchor: [0, -16]
   });
 }
@@ -233,6 +257,48 @@ function MapFocus({ candidate }) {
   return null;
 }
 
+function UploadBatchHighlight({ batch }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const shades = batch?.shades || [];
+    if (!shades.length) return undefined;
+
+    const layer = L.layerGroup();
+    const latLngs = [];
+
+    shades.forEach((shade) => {
+      if (!Number.isFinite(shade.latitude) || !Number.isFinite(shade.longitude)) return;
+      const latLng = [shade.latitude, shade.longitude];
+      latLngs.push(latLng);
+      const ring = L.circleMarker(latLng, {
+        radius: 14,
+        color: "#7c3aed",
+        weight: 3,
+        opacity: 0.95,
+        fillColor: "#c4b5fd",
+        fillOpacity: 0.24,
+        className: "upload-highlight-ring"
+      });
+      ring.bindPopup(uploadedShadePopupHtml(shade, batch.id));
+      layer.addLayer(ring);
+    });
+
+    layer.addTo(map);
+    if (latLngs.length === 1) {
+      map.flyTo(latLngs[0], Math.max(map.getZoom(), 16), { duration: 0.55 });
+    } else if (latLngs.length > 1) {
+      map.fitBounds(L.latLngBounds(latLngs), { padding: [42, 42], maxZoom: 16 });
+    }
+
+    return () => {
+      map.removeLayer(layer);
+    };
+  }, [batch, map]);
+
+  return null;
+}
+
 function elderlyDongStyle(feature) {
   return {
     color: "#7f1d1d",
@@ -241,6 +307,20 @@ function elderlyDongStyle(feature) {
     fillColor: feature.properties.color || "#fee2e2",
     fillOpacity: 0.32
   };
+}
+
+function uploadedShadePopupHtml(shade, batchId) {
+  return `
+    <div class="map-popup">
+      <strong>${escapeHtml(shade.managementNo || "업로드 그늘막")}</strong>
+      <span class="status-pill is-uploaded">최근 업로드 #${escapeHtml(batchId)}</span>
+      <dl>
+        <div><dt>처리</dt><dd>${escapeHtml(shade.action === "inserted" ? "신규" : "수정")}</dd></div>
+        <div><dt>설치장소</dt><dd>${escapeHtml(shade.name || "-")}</dd></div>
+        <div><dt>읍면동</dt><dd>${escapeHtml(shade.adminDongName || "-")}</dd></div>
+      </dl>
+    </div>
+  `;
 }
 
 function bindElderlyPopup(feature, layer) {
@@ -294,6 +374,7 @@ function existingShadePopupHtml(shade) {
       <span class="status-pill is-existing">기존 그늘막</span>
       <dl>
         <div><dt>설치장소</dt><dd>${escapeHtml(shade.name || "-")}</dd></div>
+        <div><dt>주소</dt><dd>${escapeHtml(existingShadeAddress(shade))}</dd></div>
         <div><dt>경도</dt><dd>${escapeHtml(shade.longitude)}</dd></div>
         <div><dt>위도</dt><dd>${escapeHtml(shade.latitude)}</dd></div>
       </dl>
@@ -319,6 +400,22 @@ function roadText(candidate) {
   const width = candidate.roadEffectiveWidthM ?? candidate.roadWidthM;
   const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
   return `${candidate.roadName || "-"} / ${widthText}`;
+}
+
+function existingShadeKey(shade) {
+  return shade?.id || shade?.managementNo || `${shade?.longitude}-${shade?.latitude}`;
+}
+
+function existingShadeAddress(shade) {
+  return firstText(shade?.roadAddress, shade?.lotAddress) || "-";
+}
+
+function firstText(...values) {
+  for (const value of values) {
+    const text = String(value ?? "").trim();
+    if (text) return text;
+  }
+  return "";
 }
 
 function visibleReviewFlags(candidate) {

@@ -86,9 +86,32 @@ for (const row of data.elderly) {
 for (const row of data.existingShades) {
   await query(
     `INSERT INTO shade_facilities
-      (management_no, name, source_type, longitude, latitude, geom, raw)
-     VALUES ($1, $2, 'existing', $3, $4, ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5::jsonb)`,
-    [row.managementNo, row.name, row.longitude, row.latitude, JSON.stringify(row.raw)]
+      (management_no, admin_dong_name, name, road_address, lot_address,
+       source_type, longitude, latitude, geom, raw)
+     VALUES ($1, $2, $3, $4, $5, 'existing', $6, $7,
+       ST_SetSRID(ST_MakePoint($6, $7), 4326)::geography, $8::jsonb)
+     ON CONFLICT (management_no) WHERE management_no IS NOT NULL AND trim(management_no) <> '' AND status = 'active'
+     DO UPDATE SET
+       admin_dong_name = EXCLUDED.admin_dong_name,
+       name = EXCLUDED.name,
+       road_address = EXCLUDED.road_address,
+       lot_address = EXCLUDED.lot_address,
+       source_type = EXCLUDED.source_type,
+       longitude = EXCLUDED.longitude,
+       latitude = EXCLUDED.latitude,
+       geom = EXCLUDED.geom,
+       raw = EXCLUDED.raw,
+       updated_at = now()`,
+    [
+      row.managementNo,
+      row.adminDongName,
+      row.name,
+      row.roadAddress,
+      row.lotAddress,
+      row.longitude,
+      row.latitude,
+      JSON.stringify(row.raw)
+    ]
   );
 }
 
