@@ -62,7 +62,15 @@ sudo nginx -t
 sudo systemctl reload nginx
 
 log "Checking API health"
-curl -fsS "$API_HEALTH_URL"
-printf '\n'
+for attempt in {1..10}; do
+  if curl -fsS "$API_HEALTH_URL"; then
+    printf '\n'
+    log "Deploy completed"
+    exit 0
+  fi
+  echo "Health check failed, retrying ($attempt/10)..."
+  sleep 2
+done
 
-log "Deploy completed"
+echo "API health check failed after retries" >&2
+exit 1
