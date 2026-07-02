@@ -303,7 +303,9 @@ export default function App() {
   return (
     <div className="app-shell">
       <aside className="nav-rail" aria-label="주요 메뉴">
-        <div className="brand-mark">SD</div>
+        <div className="brand-mark" aria-label="서대문구 그늘막">
+          <img src="/og-image.png" alt="" aria-hidden="true" />
+        </div>
         <button className="nav-button is-active" title="후보지 지도">
           <MapPinned size={20} />
         </button>
