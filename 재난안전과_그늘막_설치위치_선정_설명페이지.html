@@ -1,0 +1,935 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>서대문구 그늘막 설치 위치 선정 시뮬레이션 설명자료</title>
+  <meta name="description" content="재난안전과 설명용 그늘막 설치 위치 선정 시뮬레이션 웹페이지 안내자료" />
+  <link rel="icon" href="./shade-priority-app/public/favicon.png" />
+  <style>
+    :root {
+      --navy: #102033;
+      --ink: #17243a;
+      --muted: #5f6f85;
+      --line: #dce5ee;
+      --soft: #f3f7fa;
+      --paper: #ffffff;
+      --green: #087f5b;
+      --green-2: #dff5ec;
+      --blue: #2563eb;
+      --blue-2: #dbeafe;
+      --red: #dc2626;
+      --red-2: #fee2e2;
+      --amber: #d97706;
+      --amber-2: #fef3c7;
+      --shadow: 0 18px 48px rgba(16, 32, 51, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 82% 4%, rgba(8, 127, 91, 0.12), transparent 28rem),
+        linear-gradient(180deg, #f8fafc 0%, #eef4f8 100%);
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    .page {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 38px 0 70px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 8px 18px rgba(8, 127, 91, 0.16);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--navy);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(16, 32, 51, 0.06);
+    }
+
+    .button.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: stretch;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 58px 56px 46px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-copy h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(30px, 2vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-copy p {
+      max-width: 610px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      word-break: keep-all;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .hero-point {
+      min-height: 104px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+
+    .hero-point strong {
+      display: block;
+      color: var(--green);
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-point span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 520px;
+      background:
+        linear-gradient(180deg, rgba(8, 127, 91, 0.08), rgba(8, 127, 91, 0.02)),
+        #eaf7ef;
+    }
+
+    .hero-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-caption {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.64);
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(12px);
+      color: var(--navy);
+      font-weight: 800;
+      box-shadow: 0 14px 30px rgba(16, 32, 51, 0.14);
+    }
+
+    section {
+      margin-top: 42px;
+      padding: 34px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 14px 34px rgba(16, 32, 51, 0.08);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 22px;
+      align-items: flex-end;
+      margin-bottom: 24px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .section-head p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      word-break: keep-all;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .grid.four { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      min-height: 160px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      padding: 20px;
+    }
+
+    .card.problem { border-top: 5px solid var(--red); }
+    .card.solve { border-top: 5px solid var(--green); }
+    .card.blue { border-top: 5px solid var(--blue); }
+    .card.amber { border-top: 5px solid var(--amber); }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      word-break: keep-all;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      min-height: 178px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      padding: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: "0" counter(step);
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      background: var(--green-2);
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: keep-all;
+    }
+
+    .score-table,
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+
+    .score-table th,
+    .score-table td,
+    .data-table th,
+    .data-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 13px 14px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    .score-table th,
+    .data-table th {
+      background: #eef6f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    .score-table td,
+    .data-table td {
+      color: var(--muted);
+    }
+
+    .score-table tr:last-child td,
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .score-table .score {
+      width: 108px;
+      color: var(--green);
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tag.green { background: var(--green-2); color: var(--green); }
+    .tag.blue { background: var(--blue-2); color: var(--blue); }
+    .tag.red { background: var(--red-2); color: var(--red); }
+    .tag.amber { background: var(--amber-2); color: var(--amber); }
+    .tag.gray { background: #eef2f7; color: #475569; }
+
+    .mockup {
+      display: grid;
+      grid-template-columns: 1.4fr 0.65fr;
+      min-height: 430px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+    }
+
+    .mock-map {
+      position: relative;
+      min-height: 430px;
+      background:
+        linear-gradient(35deg, transparent 0 24%, rgba(255, 255, 255, 0.72) 24% 27%, transparent 27% 100%),
+        linear-gradient(115deg, transparent 0 31%, rgba(255, 255, 255, 0.72) 31% 34%, transparent 34% 100%),
+        linear-gradient(0deg, rgba(8, 127, 91, 0.14), rgba(8, 127, 91, 0.05)),
+        #dcebd8;
+    }
+
+    .dong {
+      position: absolute;
+      border: 1px solid rgba(160, 35, 35, 0.38);
+      background: rgba(220, 38, 38, 0.20);
+    }
+
+    .dong.one { left: 8%; top: 16%; width: 42%; height: 50%; border-radius: 44% 38% 48% 35%; }
+    .dong.two { right: 8%; top: 10%; width: 38%; height: 45%; border-radius: 36% 48% 34% 42%; background: rgba(220, 38, 38, 0.34); }
+    .dong.three { left: 34%; bottom: 9%; width: 48%; height: 38%; border-radius: 48% 32% 42% 36%; background: rgba(220, 38, 38, 0.12); }
+
+    .marker {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(16, 32, 51, 0.22);
+      border: 3px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .marker.selected { background: var(--green); }
+    .marker.review { background: var(--amber); }
+    .marker.excluded { background: var(--red); }
+    .marker.shelter { background: var(--blue); }
+    .marker.existing { background: #111827; }
+
+    .mock-panel {
+      padding: 24px;
+      border-left: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .screenshot-shell {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #0f172a;
+      box-shadow: 0 20px 44px rgba(16, 32, 51, 0.14);
+    }
+
+    .screenshot-shell img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .screen-notes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .screen-note {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      padding: 16px;
+    }
+
+    .screen-note strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .screen-note span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: keep-all;
+    }
+
+    .mock-panel h3 {
+      margin: 0 0 16px;
+      color: var(--navy);
+      font-size: 19px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    .source-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .effects {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .effect {
+      min-height: 150px;
+      border-radius: 20px;
+      padding: 20px;
+      background: linear-gradient(180deg, #ffffff, #f8fbfd);
+      border: 1px solid var(--line);
+    }
+
+    .effect strong {
+      display: block;
+      color: var(--green);
+      font-size: 26px;
+      letter-spacing: -0.05em;
+    }
+
+    .effect h3 {
+      margin: 8px 0 8px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+
+    .effect p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      word-break: keep-all;
+    }
+
+    .closing {
+      display: grid;
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: 26px;
+      align-items: center;
+      margin-top: 42px;
+      padding: 32px;
+      border-radius: 26px;
+      color: #fff;
+      background: linear-gradient(135deg, #064e3b, #0f766e);
+      box-shadow: var(--shadow);
+    }
+
+    .closing img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .closing h2 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: -0.045em;
+      line-height: 1.2;
+    }
+
+    .closing p {
+      margin: 16px 0 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 16px;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 980px) {
+      .page { width: min(100% - 28px, 720px); }
+      .hero, .mockup, .closing { grid-template-columns: 1fr; }
+      .hero-copy { padding: 38px 28px; }
+      .hero-visual { min-height: 360px; }
+      .hero-points, .grid.three, .grid.two, .grid.four, .flow, .effects, .screen-notes { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+      section { padding: 24px; }
+      .data-table, .score-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .top-actions { display: none; }
+      .hero, section, .closing {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+      section { margin-top: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <div class="brand">
+        <img src="./shade-priority-app/public/favicon.png" alt="서대문구 그늘막 마스코트 얼굴" />
+        <span>서대문구 그늘막 설치 위치 선정 시뮬레이션</span>
+      </div>
+      <div class="top-actions">
+        <button class="button" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+        <a class="button primary" href="http://133.186.215.63/" target="_blank" rel="noreferrer">운영 웹페이지 열기</a>
+      </div>
+    </div>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <h1>그늘막 설치 후보지 선정,<br />이제 데이터로 설명합니다.</h1>
+        <p>
+          기존에는 민원 위치를 중심으로 후보지를 검토하면서 약 7일이 소요되었습니다.
+          본 시스템은 횡단보도, 인도 폭, 도로, 교차로, 고령자, 무더위쉼터, 기존 그늘막 정보를
+          한 화면에서 비교하여 객관적인 설치 적합 위치를 찾는 업무용 웹페이지입니다.
+        </p>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>7일</strong>
+            <span>기존 후보 검토 소요</span>
+          </div>
+          <div class="hero-point">
+            <strong>451개</strong>
+            <span>기본 횡단보도 후보</span>
+          </div>
+          <div class="hero-point">
+            <strong>20점</strong>
+            <span>설치 필요도 평가</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="./shade-priority-app/public/og-image.png" alt="서대문구 그늘막 마스코트" />
+        <div class="hero-caption">재난안전과 설명용 웹페이지 안내자료</div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <h2>1. 기존 업무에서 어려웠던 점</h2>
+        <p>후보지를 고르는 기준이 명확하게 보이지 않으면, 설치 우선순위와 예산 투입 근거를 설명하기 어렵습니다.</p>
+      </div>
+      <div class="grid three">
+        <article class="card problem">
+          <h3>후보 검토에 시간이 오래 걸림</h3>
+          <p>설치 후보지를 찾기 위해 여러 자료를 따로 확인해야 했고, 후보 검토에 약 일주일이 소요되었습니다.</p>
+        </article>
+        <article class="card problem">
+          <h3>민원 중심 검토의 한계</h3>
+          <p>민원이 들어온 위치를 우선 살피다 보니, 실제로 어느 위치가 더 필요한지 객관적으로 비교하기 어려웠습니다.</p>
+        </article>
+        <article class="card problem">
+          <h3>현장 부적합 가능성</h3>
+          <p>인도 폭, 기존 그늘막과의 중복, 주변 시설물 등 설치 불가 요소가 현장에서 뒤늦게 확인될 수 있었습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>2. 시스템이 해결하는 방식</h2>
+        <p>사람이 일일이 후보지를 찾는 방식에서, 데이터가 먼저 후보를 분류하고 담당자가 현장을 최종 확인하는 방식으로 바꿉니다.</p>
+      </div>
+      <div class="flow">
+        <div class="step">
+          <h3>후보 생성</h3>
+          <p>서울시 대로변 횡단보도 위치를 기본 후보지로 사용합니다.</p>
+        </div>
+        <div class="step">
+          <h3>필수 조건 확인</h3>
+          <p>인도 폭 3.5m 이상, 기존 그늘막 80m 이내 여부를 먼저 확인합니다.</p>
+        </div>
+        <div class="step">
+          <h3>가점 계산</h3>
+          <p>도로, 교차로, 고령자, 쉼터 접근성을 기준으로 점수를 계산합니다.</p>
+        </div>
+        <div class="step">
+          <h3>지도 검토</h3>
+          <p>선정 후보, 현장 확인 후보, 제외 후보를 지도와 표에서 동시에 확인합니다.</p>
+        </div>
+        <div class="step">
+          <h3>업무 활용</h3>
+          <p>후보 리스트를 엑셀로 내려받고, 매년 설치된 위치를 다시 업로드합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>3. 웹페이지에서 볼 수 있는 화면</h2>
+        <p>지도 위에 평가 근거가 함께 보이므로, 특정 위치가 왜 선정 후보인지 한눈에 설명할 수 있습니다.</p>
+      </div>
+      <div class="screenshot-shell">
+        <img src="./그늘막 설치 위치 선정 시뮬레이션 화면.png" alt="서대문구 그늘막 설치 위치 선정 시뮬레이션 실제 웹페이지 화면" />
+      </div>
+      <div class="screen-notes">
+        <div class="screen-note">
+          <strong>후보 현황 요약</strong>
+          <span>원천 후보, 선정, 현장 확인, 제외 건수를 상단에서 바로 확인합니다.</span>
+        </div>
+        <div class="screen-note">
+          <strong>지도 기반 근거 확인</strong>
+          <span>고령자 분포, 기존 그늘막, 무더위쉼터를 지도 위에 함께 표시합니다.</span>
+        </div>
+        <div class="screen-note">
+          <strong>점수체계 조정</strong>
+          <span>오른쪽 점수체계 항목을 켜고 끄며 평가 결과를 다시 비교합니다.</span>
+        </div>
+        <div class="screen-note">
+          <strong>엑셀·업로드 연계</strong>
+          <span>후보 리스트 다운로드와 연도별 설치 위치 업로드를 지원합니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>4. 평가 기준</h2>
+        <p>총점은 20점이며, 필수 설치 조건은 점수에 포함하지 않고 미충족 시 후보에서 제외합니다.</p>
+      </div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>평가 항목</th>
+            <th>판단 기준</th>
+            <th class="score">점수</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag red">필수</span></td>
+            <td>인도 폭 3.5m 이상</td>
+            <td>그늘막 설치 기준상 최소 인도 폭을 충족해야 합니다.</td>
+            <td class="score">필수</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">가점</span></td>
+            <td>도로/간선도로성</td>
+            <td>도로명주소 도로구간과 실폭도로 자료를 기준으로 도로 폭과 주도로 여부를 평가합니다.</td>
+            <td class="score">0~5점</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">가점</span></td>
+            <td>교차로/사거리 인접</td>
+            <td>교차로와 가까울수록 보행 대기 수요가 높다고 보고 점수를 부여합니다.</td>
+            <td class="score">0~5점</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">가점</span></td>
+            <td>고령자 밀집 지역</td>
+            <td>법정동 기준 65세 이상 인구 비율이 높은 지역에 높은 점수를 부여합니다.</td>
+            <td class="score">0~6점</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">가점</span></td>
+            <td>무더위쉼터 접근 부족</td>
+            <td>가까운 무더위쉼터가 멀수록 그늘막 설치 필요성이 높다고 평가합니다.</td>
+            <td class="score">0~4점</td>
+          </tr>
+          <tr>
+            <td><span class="tag red">필수</span></td>
+            <td>기존 그늘막 80m 이내 제외</td>
+            <td>중복 설치를 막기 위해 기존 그늘막과 가까운 후보는 제외합니다.</td>
+            <td class="score">필수</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>5. 사용 데이터와 출처</h2>
+        <p>공공데이터, 브이월드 공간자료, 서대문구 내부자료를 통합하여 후보지 평가에 사용합니다.</p>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>자료명</th>
+            <th>기관 / 출처</th>
+            <th>활용 목적</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>서울시 대로변 횡단보도 위치정보</td>
+            <td>서울 열린데이터광장 OA-21209</td>
+            <td>기본 후보지 451개 생성</td>
+          </tr>
+          <tr>
+            <td>서울시 무더위쉼터</td>
+            <td>서울 열린데이터광장 OA-21065</td>
+            <td>쉼터 접근 부족 여부 평가</td>
+          </tr>
+          <tr>
+            <td>서울시 교차로 관련 정보</td>
+            <td>서울 열린데이터광장 OA-15534</td>
+            <td>교차로/사거리 인접성 평가</td>
+          </tr>
+          <tr>
+            <td>서울시 도로노선 정보</td>
+            <td>서울 열린데이터광장 OA-22650</td>
+            <td>도로 성격 판단 보조</td>
+          </tr>
+          <tr>
+            <td>서울시 자치구별 도보 네트워크 공간 정보</td>
+            <td>서울 열린데이터광장 OA-21208</td>
+            <td>거리 계산 정확도 보강</td>
+          </tr>
+          <tr>
+            <td>연속수치지형도 인도 데이터</td>
+            <td>국토지리정보원 / 브이월드</td>
+            <td>인도 폭 3.5m 이상 필수 조건 판단</td>
+          </tr>
+          <tr>
+            <td>도로명주소 도로구간·실폭도로</td>
+            <td>국토교통부 / 브이월드</td>
+            <td>도로 폭과 도로/간선도로성 점수 산정</td>
+          </tr>
+          <tr>
+            <td>고령자 현황, 기존 그늘막 설치 위치</td>
+            <td>서대문구 내부자료 / 재난관리팀 자료</td>
+            <td>고령자 수요 평가, 중복 설치 방지</td>
+          </tr>
+          <tr>
+            <td>그늘막 설치 기준 문서</td>
+            <td>그늘막가이드.pdf</td>
+            <td>인도 폭 등 설치 가능 조건 반영</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>6. 운영 방식</h2>
+        <p>직원은 웹브라우저로 접속하고, 자료는 서버와 PostgreSQL 데이터베이스에서 관리합니다.</p>
+      </div>
+      <div class="grid four">
+        <article class="card solve">
+          <h3>웹 접속</h3>
+          <p>별도 프로그램 설치 없이 웹브라우저에서 후보지 지도와 리스트를 확인합니다.</p>
+        </article>
+        <article class="card blue">
+          <h3>점수체계 조정</h3>
+          <p>평가 항목 체크박스를 켜고 끄며 조건별 시뮬레이션 결과를 비교합니다.</p>
+        </article>
+        <article class="card amber">
+          <h3>엑셀 활용</h3>
+          <p>선정 후보, 제외 후보, 기존 그늘막 목록을 엑셀로 내려받아 보고자료로 활용합니다.</p>
+        </article>
+        <article class="card solve">
+          <h3>연도별 갱신</h3>
+          <p>새로 설치한 그늘막 위치를 업로드하면 다음 평가에서 기존 그늘막으로 반영됩니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>7. 도입 기대효과</h2>
+        <p>업무 시간 단축뿐 아니라, 왜 해당 위치가 필요한지 설명할 수 있는 근거가 생깁니다.</p>
+      </div>
+      <div class="effects">
+        <div class="effect">
+          <strong>시간 단축</strong>
+          <h3>후보지 검토 업무 효율화</h3>
+          <p>여러 자료를 따로 확인하던 과정을 한 화면에서 처리합니다.</p>
+        </div>
+        <div class="effect">
+          <strong>객관성</strong>
+          <h3>민원 중심에서 기준 중심으로</h3>
+          <p>인도 폭, 도로, 교차로, 고령자, 쉼터, 기존 시설을 함께 반영합니다.</p>
+        </div>
+        <div class="effect">
+          <strong>설명력</strong>
+          <h3>선정 근거 시각화</h3>
+          <p>지도와 점수표를 통해 후보 선정 이유를 부서 내외부에 설명할 수 있습니다.</p>
+        </div>
+        <div class="effect">
+          <strong>현장성</strong>
+          <h3>현장 확인 대상 선별</h3>
+          <p>자동 제외 후보와 현장 확인 후보를 구분해 현장 방문 우선순위를 정할 수 있습니다.</p>
+        </div>
+        <div class="effect">
+          <strong>지속성</strong>
+          <h3>매년 반복 사용</h3>
+          <p>설치 완료 위치를 계속 누적하여 다음 연도 평가에 반영합니다.</p>
+        </div>
+        <div class="effect">
+          <strong>공유</strong>
+          <h3>회의·보고자료 연계</h3>
+          <p>엑셀 다운로드와 웹 화면을 이용해 검토 결과를 쉽게 공유합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>8. 향후 고도화 방향</h2>
+        <p>현재 v1.0은 위치 선정과 자료 확인 중심이며, 다음 단계에서는 현장 검토 관리 기능을 추가할 수 있습니다.</p>
+      </div>
+      <div class="grid three">
+        <article class="card solve">
+          <h3>현장검토 관리</h3>
+          <p>후보별 현장 확인 결과, 설치 가능 여부, 불가 사유, 사진, 메모를 저장합니다.</p>
+        </article>
+        <article class="card blue">
+          <h3>관리자 로그인</h3>
+          <p>누가 데이터를 수정했는지 이력을 남기고, 관리 기능은 권한 있는 사용자만 접근하도록 합니다.</p>
+        </article>
+        <article class="card amber">
+          <h3>데이터 갱신 자동화</h3>
+          <p>공공데이터와 내부자료 갱신 절차를 정례화해 매년 같은 기준으로 평가합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="closing">
+      <img src="./shade-priority-app/public/og-image.png" alt="서대문구 그늘막 이미지" />
+      <div>
+        <h2>핵심은 “빠르게 고르는 것”보다<br />“설명 가능한 기준으로 고르는 것”입니다.</h2>
+        <p>
+          이 시스템은 재난안전과가 그늘막 설치 후보지를 검토할 때 필요한 자료를 한곳에 모으고,
+          설치 필요도와 제외 사유를 함께 보여주는 의사결정 지원 도구입니다.
+        </p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
