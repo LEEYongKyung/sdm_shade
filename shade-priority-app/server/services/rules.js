@@ -50,13 +50,13 @@ export const scoringRules = [
     sortOrder: 50
   },
   {
-    id: "existing_shade_exclusion",
-    label: "기존 그늘막 80m 이내 제외",
-    description: "중복 설치 방지를 위한 필수 제외 조건입니다.",
-    maxScore: 0,
-    category: "필수",
+    id: "existing_shade_distance",
+    label: "기존 그늘막 위치 대비 거리",
+    description: "80m 이상 3점, 50~80m 2점, 30~50m 1점, 8~30m 0점. 8m 미만은 후보에서 제외됩니다.",
+    maxScore: 3,
+    category: "중복",
     enabled: true,
-    locked: true,
+    locked: false,
     sortOrder: 60
   }
 ];

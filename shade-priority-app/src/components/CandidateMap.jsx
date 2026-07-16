@@ -342,6 +342,7 @@ function bindElderlyPopup(feature, layer) {
 function candidatePopupHtml(candidate) {
   const reviewFlags = visibleReviewFlags(candidate);
   const reason = candidate.exclusionReason || reviewFlags.join(", ");
+  const reasonLabel = candidate.status === "excluded" ? "제외 사유" : "주의";
 
   return `
     <div class="map-popup">
@@ -351,14 +352,14 @@ function candidatePopupHtml(candidate) {
         <div><dt>총점</dt><dd>${escapeHtml(number(candidate.totalScore))}</dd></div>
         <div><dt>도로</dt><dd>${escapeHtml(roadText(candidate))}</dd></div>
         <div><dt>인도폭</dt><dd>${escapeHtml(candidate.sidewalkWidthM ? `${candidate.sidewalkWidthM}m` : "데이터 없음")}</dd></div>
-        <div><dt>기존 그늘막</dt><dd>${escapeHtml(meters(candidate.nearestExistingShadeM))}</dd></div>
+        <div><dt>기존 그늘막</dt><dd>${escapeHtml(existingShadeDistanceText(candidate))}</dd></div>
         <div><dt>무더위쉼터</dt><dd>${escapeHtml(meters(candidate.nearestCoolingShelterM))}</dd></div>
         <div><dt>교차로</dt><dd>${escapeHtml(meters(candidate.nearestIntersectionM))}</dd></div>
       </dl>
       ${
         reason
           ? `<div class="popup-reason ${candidate.status === "excluded" ? "is-excluded" : "is-review"}">
-              <span>${candidate.status === "excluded" ? "제외 사유" : "확인 사유"}</span>
+              <span>${escapeHtml(reasonLabel)}</span>
               <strong>${escapeHtml(reason)}</strong>
             </div>`
           : ""
@@ -400,6 +401,11 @@ function roadText(candidate) {
   const width = candidate.roadEffectiveWidthM ?? candidate.roadWidthM;
   const widthText = Number.isFinite(width) ? `${Math.round(width * 10) / 10}m` : "-";
   return `${candidate.roadName || "-"} / ${widthText}`;
+}
+
+function existingShadeDistanceText(candidate) {
+  const score = candidate?.breakdown?.existing_shade_distance?.score ?? 0;
+  return `${meters(candidate?.nearestExistingShadeM)} (+${score})`;
 }
 
 function existingShadeKey(shade) {

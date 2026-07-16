@@ -215,6 +215,7 @@ export default function App() {
       고령자점수: scoreOf(row, "elderly_density"),
       쉼터점수: scoreOf(row, "cooling_shelter_gap"),
       기존그늘막거리m: Math.round(row.nearestExistingShadeM || 0),
+      기존그늘막거리점수: scoreOf(row, "existing_shade_distance"),
       무더위쉼터거리m: Math.round(row.nearestCoolingShelterM || 0),
       교차로거리m: Math.round(row.nearestIntersectionM || 0),
       제외사유: row.exclusionReason,
@@ -260,6 +261,10 @@ export default function App() {
 
   function candidateAddress(row) {
     return firstText(row?.roadAddress, row?.parcelAddress) || "-";
+  }
+
+  function existingShadeDistanceLabel(row) {
+    return `${meters(row?.nearestExistingShadeM)} (+${scoreOf(row, "existing_shade_distance")})`;
   }
 
   function existingShadeAddress(row) {
@@ -505,7 +510,7 @@ export default function App() {
                           <td>{`${meters(row.nearestIntersectionM)} (+${scoreOf(row, "intersection")})`}</td>
                           <td>{`+${scoreOf(row, "elderly_density")}`}</td>
                           <td>{`${meters(row.nearestCoolingShelterM)} (+${scoreOf(row, "cooling_shelter_gap")})`}</td>
-                          <td>{meters(row.nearestExistingShadeM)}</td>
+                          <td>{existingShadeDistanceLabel(row)}</td>
                         </tr>
                       ))
                     )}
@@ -534,7 +539,7 @@ export default function App() {
                 <div><dt>총점</dt><dd>{number(selectedCandidate.totalScore)}</dd></div>
                 <div><dt>도로</dt><dd>{roadLabel(selectedCandidate)}</dd></div>
                 <div><dt>인도폭</dt><dd>{selectedCandidate.sidewalkWidthM ? `${selectedCandidate.sidewalkWidthM}m` : "데이터 없음"}</dd></div>
-                <div><dt>기존 그늘막</dt><dd>{meters(selectedCandidate.nearestExistingShadeM)}</dd></div>
+                <div><dt>기존 그늘막</dt><dd>{existingShadeDistanceLabel(selectedCandidate)}</dd></div>
               </dl>
               {(selectedCandidate.exclusionReason || visibleReviewFlags(selectedCandidate).length > 0) && (
                 <div className="warning-box">

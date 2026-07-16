@@ -51,9 +51,9 @@ function evaluateCandidate(crosswalk, data, enabled) {
   let status = "selected";
   let exclusionReason = "";
 
-  if (Number.isFinite(nearestExistingShadeM) && nearestExistingShadeM <= 80) {
+  if (Number.isFinite(nearestExistingShadeM) && nearestExistingShadeM < 8) {
     status = "excluded";
-    exclusionReason = "기존 그늘막 80m 이내";
+    exclusionReason = "기존 그늘막 8m 미만";
   }
 
   if (!sidewalkMatch) {
@@ -71,12 +71,16 @@ function evaluateCandidate(crosswalk, data, enabled) {
   addScore("intersection", enabled, breakdown, intersectionScore(nearestIntersectionM));
   addScore("elderly_density", enabled, breakdown, elderlyScore(elderly));
   addScore("cooling_shelter_gap", enabled, breakdown, shelterGapScore(nearestCoolingShelterM));
+  addScore("existing_shade_distance", enabled, breakdown, existingShadeDistanceScore(nearestExistingShadeM));
 
   if (status === "selected" && shouldReviewSidewalkConfidence(sidewalkMatch?.confidence)) {
     reviewFlags.push(`인도 폭 매칭 신뢰도 ${sidewalkMatch?.confidence || "NONE"}`);
   }
   if (status === "selected" && enabled.has("major_road") && !roadMatch && !context?.roadName) {
     reviewFlags.push("도로구간 매칭 없음");
+  }
+  if (Number.isFinite(nearestExistingShadeM) && nearestExistingShadeM >= 8 && nearestExistingShadeM < 30) {
+    reviewFlags.push("기존 그늘막 30m 미만");
   }
 
   return {
@@ -302,6 +306,14 @@ function shelterGapScore(distance) {
   return 4;
 }
 
+function existingShadeDistanceScore(distance) {
+  if (!Number.isFinite(distance)) return { score: 3, reason: "기존 그늘막 없음" };
+  if (distance >= 80) return { score: 3 };
+  if (distance >= 50) return { score: 2 };
+  if (distance >= 30) return { score: 1 };
+  return { score: 0, reason: "기존 그늘막 30m 미만" };
+}
+
 function findLegacySidewalkMatch(point, sidewalks) {
   let best = null;
   for (const segment of sidewalks) {
@@ -332,7 +344,7 @@ function sortCandidates(a, b) {
   return (
     b.totalScore - a.totalScore ||
     (b.sidewalkWidthM || 0) - (a.sidewalkWidthM || 0) ||
-    (a.nearestExistingShadeM || 99999) - (b.nearestExistingShadeM || 99999)
+    (b.nearestExistingShadeM || 0) - (a.nearestExistingShadeM || 0)
   );
 }
 
@@ -346,5 +358,6 @@ function maxScore(enabled) {
   if (enabled.has("intersection")) total += 5;
   if (enabled.has("elderly_density")) total += 6;
   if (enabled.has("cooling_shelter_gap")) total += 4;
+  if (enabled.has("existing_shade_distance")) total += 3;
   return total;
 }
